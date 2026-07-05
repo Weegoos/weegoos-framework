@@ -317,4 +317,20 @@ const cardStyles = computed(() => ({
   justify-content: space-between;
   margin-top: 16px;
 }
+
+@media (prefers-reduced-motion: reduce) {
+  .w-card {
+    transition: none !important;
+    transform: none !important;
+  }
+  .w-card-perspective {
+    perspective: none !important;
+  }
+  .w-card-content {
+    transform: none !important; /* Убираем translateZ(20px) */
+  }
+  .w-card-glow-default {
+    transition: none !important; /* Свечение переключается мгновенно, без затухания */
+  }
+}
 </style>
