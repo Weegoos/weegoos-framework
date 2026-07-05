@@ -1,91 +1,153 @@
 <template>
-  <div class="sandbox-root">
+  <div class="test-container">
+    <!-- 1. Базовые пресеты (System Tokens) -->
+    <section>
+      <h2>Presets Test</h2>
+      <div class="grid">
+        <WCard preset="default">Default Card</WCard>
+        <WCard preset="solid" color="danger">Solid Danger</WCard>
+        <WCard preset="minimal">Minimalist Card</WCard>
+      </div>
+    </section>
+
+    <!-- 2. Neon & Glow (Интерактив) -->
+    <section>
+      <h2>Neon & Glow</h2>
+      <div class="grid">
+        <WCard 
+          preset="neon" 
+          color="accent" 
+          :glow="true" 
+          glow-color="rgba(0, 255, 255, 0.4)"
+        >
+          <h3>Cyberpunk Mode</h3>
+          <p>Neon glow + tilt animation</p>
+        </WCard>
+      </div>
+    </section>
+
+    <!-- 3. Структурированный контент (Header/Footer) -->
+    <section>
+      <h2>Structured Layout</h2>
+      <WCard width="400px" elevation="lg">
+        <template #header>
+          <div style="font-weight: bold; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px;">
+            Card Header
+          </div>
+        </template>
+        
+        <p>This is the main body content that stretches due to flex-grow.</p>
+        
+        <template #footer>
+          <button @click="console.log('Action!')">Action</button>
+        </template>
+      </WCard>
+    </section>
+
+    <!-- 4. Ручная кастомизация (Overriding Tokens) -->
+    <section>
+      <h2>Custom Styles</h2>
+      <WCard 
+        background="linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
+        border-radius="30px"
+        border-width="3px"
+        border-color="white"
+        padding="40px"
+        :tilt="false"
+      >
+        <h3 style="color: white;">Hardcoded Styles</h3>
+        <p style="color: white;">Custom gradient and huge border-radius</p>
+      </WCard>
+    </section>
+
+    <!-- 5. State Test (Disabled) -->
+    <section>
+      <h2>Disabled State</h2>
+      <WCard disabled>
+        This card is inactive and won't respond to hover or tilt.
+      </WCard>
+    </section>
+
+    <section>
+  <h2>Dynamic State Toggle</h2>
+  <button @click="currentPreset = currentPreset === 'glass' ? 'neon' : 'glass'">
+    Toggle Preset
+  </button>
+  <WCard :preset="currentPreset" :style="{ marginTop: '20px' }">
+    <h3>Current: {{ currentPreset }}</h3>
+  </WCard>
+</section>
+
+<section>
+  <h2>Overflow & Sizing</h2>
+  <div style="display: flex; gap: 20px;">
+    <!-- Жесткий размер + Overflow -->
+    <WCard width="150px" height="150px" overflow="auto">
+      <p style="width: 300px;">
+        Этот контент намного больше карточки. 
+        Тут мы проверяем, правильно ли работает overflow: auto и не ломается ли верстка.
+      </p>
+    </WCard>
     
-    <!-- 1. Полный фарш (Все эффекты по умолчанию) -->
-    <WCard 
-      width="400px" 
-      height="250px"
-      background="#0f0926"
-      borderColor="rgba(129, 140, 248, 0.2)"
-      hoverBorderColor="#818cf8"
-      borderRadius="24px"
-      glowColor="rgba(129, 140, 248, 0.3)"
-      padding="32px"
-    >
-      <div style="display: flex; flex-direction: column; gap: 16px; height: 100%; justify-content: space-between;">
-        <span style="color: #818cf8; font-family: sans-serif; font-weight: 600;">Full Interactive (Tilt + Glow + Scale)</span>
-        <WButton magnetic radius="80">Click Me</WButton>
-      </div>
+    <!-- Очень длинная карта -->
+    <WCard height="300px" style="display: flex; align-items: center; justify-content: center;">
+      Vertical Flex Centering
     </WCard>
+  </div>
+</section>
 
-    <!-- 2. Только свечение, без 3D-наклона (Стиль Stripe/Linear) -->
-    <WCard 
-      width="400px" 
-      height="250px"
-      :tilt="false"
-      glowColor="rgba(0, 220, 130, 0.2)"
-      hoverBorderColor="#00dc82"
-    >
-      <div style="display: flex; flex-direction: column; gap: 8px;">
-        <h3 style="color: white; font-family: sans-serif; margin: 0;">Flat 2D Glow</h3>
-        <p style="color: #888; font-family: sans-serif; font-size: 14px; margin: 0;">
-          Идеально для контентных сеток. Идеально четкий текст без 3D-размытия, но с реактивным неоновым ховером.
-        </p>
-      </div>
-    </WCard>
+<section>
+  <h2>Touch Interaction</h2>
+  <WCard 
+    preset="default" 
+    :tilt="true" 
+    :tilt-on-touch="true" 
+    :max-tilt="25"
+  >
+    <h3>Touch Me!</h3>
+    <p>На мобильном устройстве эта карта будет наклоняться при движении пальца.</p>
+  </WCard>
+</section>
 
-    <!-- 3. Только 3D-наклон, без неонового свечения -->
-    <WCard 
-      width="400px" 
-      height="250px"
-      :glow="false"
-      background="#1e1e24"
-      hoverBorderColor="rgba(255,255,255,0.3)"
-    >
-      <div style="display: flex; flex-direction: column; justify-content: center; height: 100%; text-align: center;">
-        <span style="color: #fff; font-family: sans-serif; font-size: 24px; font-weight: 300; letter-spacing: 1px;">
-          PURE 3D TILT
-        </span>
-      </div>
-    </WCard>
+<section>
+  <h2>Zero-Prop Test</h2>
+  <WCard>
+    Я работаю без единого пропса?
+  </WCard>
+</section>
 
-    <!-- 4. Строгая статика (Все эффекты отключены) -->
-    <WCard 
-      width="400px" 
-      height="250px"
-      :tilt="false"
-      :glow="false"
-      :scaleOnHover="false"
-      background="#0d0d11"
-      borderColor="rgba(255,255,255,0.03)"
-      hoverBorderColor="rgba(255,255,255,0.1)"
-    >
-      <div style="display: flex; flex-direction: column; gap: 8px;">
-        <span style="color: #666; font-family: sans-serif; font-size: 12px; text-transform: uppercase;">Minimalist</span>
-        <span style="color: #eee; font-family: sans-serif;">Полностью статичная премиальная карточка. Меняется только цвет бордера.</span>
-      </div>
-    </WCard>
-
-    <!-- 5. Дефолтный стиль Weegoos -->
-    <WCard width="400px" height="250px">
-      <span style="color: white; font-family: sans-serif;">Default Weegoos Style</span>
-    </WCard>
-
+<section>
+  <h2>Expose API Control</h2>
+  <WCard ref="apiCard" preset="elevated">
+    <h3>API Controlled</h3>
+    <div style="display:flex; gap: 10px; margin-top: 10px;">
+      <button @click="$refs.apiCard.tiltTo(30, 30)">Force Tilt</button>
+      <button @click="$refs.apiCard.reset()">Reset Tilt</button>
+    </div>
+  </WCard>
+</section>
   </div>
 </template>
 
 <script setup>
-// Компоненты зарегистрированы глобально фреймворком. Код чист.
+import { ref } from 'vue';
+
+const currentPreset = ref('glass');
 </script>
 
 <style scoped>
-.sandbox-root {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 24px;
+.test-container {
   padding: 40px;
-  background: #08080c;
-  min-height: 100vh;
-  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 50px;
+  background: #050505;
+  color: white;
 }
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+}
+section h2 { margin-bottom: 20px; color: #888; }
 </style>
