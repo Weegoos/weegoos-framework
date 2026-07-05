@@ -249,6 +249,48 @@
   </div>
 
 </div>
+
+<div style="padding: 40px; background: #050505; min-height: 100vh; display: flex; gap: 20px; flex-wrap: wrap;">
+    
+    <!-- 1. Стандартная карточка (использует токены md/neutral) -->
+    <WCard>
+      <h3>Стандартная карточка</h3>
+      <p>Использует значения по умолчанию из токенов.</p>
+    </WCard>
+
+    <!-- 2. Стеклянная карточка (вариант glass) -->
+    <WCard variant="glass" radius="lg" size="lg">
+      <template #header>
+        <h3>Glassmorphism</h3>
+      </template>
+      <p>Эта карточка использует токен variant="glass".</p>
+      <template #footer>
+        <button>Действие</button>
+      </template>
+    </WCard>
+
+    <!-- 3. Полностью кастомная карточка (перекрывает токены) -->
+    <WCard 
+      background="linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
+      border-color="transparent"
+      border-radius="40px"
+      padding="40px"
+      :tilt="true"
+      :glow="true"
+      glow-color="rgba(255, 255, 255, 0.4)"
+      style="color: white"
+    >
+      <h3>Кастомный стиль</h3>
+      <p>Здесь мы перекрыли background, border и радиус своими значениями.</p>
+    </WCard>
+
+    <!-- 4. Карточка с ошибкой (color="danger") -->
+    <WCard color="danger" elevation="sm" variant="solid" width="300px" height="150px" :glow="false">
+      <h3>Ошибка системы</h3>
+      <p>Использует токен цветовой схемы danger.</p>
+    </WCard>
+
+  </div>
   </div>
 </template>
 
