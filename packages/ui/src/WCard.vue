@@ -16,6 +16,7 @@ interface Props {
   glow?: boolean;
   scaleOnHover?: boolean;
   disabled?: boolean;
+  tiltOnTouch?: boolean; // Новый проп для управления тач-устройствами ⭐
 
   hoverScale?: number;
   hoverDuration?: number;
@@ -27,7 +28,6 @@ interface Props {
   cursor?: string;
   overflow?: string;
 
-  // Динамический HTML-тег (полиморфизм)
   as?: string;
 
   // Токены Weegoos Framework
@@ -54,6 +54,7 @@ const props = withDefaults(defineProps<Props>(), {
   glow: true,
   scaleOnHover: true,
   disabled: false,
+  tiltOnTouch: false, // По умолчанию выключено для сохранения нативного мобильного скролла
 
   hoverScale: 1.015,
   hoverDuration: 0.4,
@@ -76,11 +77,10 @@ const props = withDefaults(defineProps<Props>(), {
   padding: '24px'
 });
 
-// Объявляем события для внешнего использования
 const emit = defineEmits<{
   (e: 'mouseenter', event: MouseEvent): void
   (e: 'mouseleave', event: MouseEvent): void
-  (e: 'mousemove', event: MouseEvent): void
+  (e: 'mousemove', event: MouseEvent | TouchEvent): void
 }>();
 
 const cardRef = ref<HTMLElement | null>(null);
@@ -97,20 +97,41 @@ const {
   handleMouseLeave
 } = useCardAnimation(cardRef, props);
 
-// Обёртки для перехвата и эмиттинга событий
+// Адаптированные хендлеры событий
 const onMouseMove = (e: MouseEvent) => {
   handleMouseMove(e);
   emit('mousemove', e);
 };
 
+const onTouchMove = (e: TouchEvent) => {
+  if (props.tiltOnTouch) {
+    handleMouseMove(e);
+    emit('mousemove', e);
+  }
+};
+
 const onMouseEnter = (e: MouseEvent) => {
-  handleMouseEnter();
+  handleMouseEnter(e);
   emit('mouseenter', e);
 };
 
+const onTouchStart = (e: TouchEvent) => {
+  if (props.tiltOnTouch) {
+    // Симулируем вход для тача
+    handleMouseEnter(e as any); 
+    handleMouseMove(e);
+  }
+};
+
 const onMouseLeave = (e: MouseEvent) => {
-  handleMouseLeave();
+  handleMouseLeave(e);
   emit('mouseleave', e);
+};
+
+const onTouchEnd = (e: TouchEvent) => {
+  if (props.tiltOnTouch) {
+    handleMouseLeave(e);
+  }
 };
 
 const formatSize = (value: string | number) => {
@@ -160,10 +181,13 @@ const cardStyles = computed(() => ({
       :is="as"
       ref="cardRef"
       class="w-card"
-      :class="{ 'w-card-disabled': disabled }"
+      :class="{ 'w-card-disabled': disabled, 'w-card-touch-active': tiltOnTouch }"
       @mousemove="onMouseMove"
       @mouseenter="onMouseEnter"
       @mouseleave="onMouseLeave"
+      @touchmove="onTouchMove"
+      @touchstart="onTouchStart"
+      @touchend="onTouchEnd"
     >
       <div v-if="glow && !disabled" class="w-card-glow-container">
         <slot 
@@ -235,6 +259,11 @@ const cardStyles = computed(() => ({
   transition: var(--w-card-transition);
 }
 
+/* На мобильных предотвращаем нежелательные зависания скролла, если тач выключен */
+.w-card-touch-active {
+  touch-action: none;
+}
+
 .w-card:not(.w-card-disabled):hover {
   border-color: var(--w-card-border-hover);
   background: linear-gradient(0deg, rgba(255, 255, 255, 0.01), rgba(255, 255, 255, 0.01)), var(--w-card-bg);
@@ -288,4 +317,4 @@ const cardStyles = computed(() => ({
   justify-content: space-between;
   margin-top: 16px;
 }
-</style>  
+</style>

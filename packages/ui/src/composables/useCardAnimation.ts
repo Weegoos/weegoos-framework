@@ -1,92 +1,81 @@
-import { ref, type Ref } from 'vue';
+import { ref, onMounted, onUnmounted, type Ref } from 'vue';
 import { gsap } from 'gsap';
 
-interface AnimationOptions {
-  tilt: boolean;
-  glow: boolean;
-  scaleOnHover: boolean;
-  maxTilt: number;
-  hoverScale: number;
-  hoverDuration: number;
-  hoverEase: string;
-  disabled: boolean; // Добавили флаг
-}
-
-export function useCardAnimation(
-  cardRef: Ref<HTMLElement | null>,
-  options: AnimationOptions
-) {
+export function useCardAnimation(cardRef: Ref<HTMLElement | null>, props: any) {
   const glowX = ref(0);
   const glowY = ref(0);
   const isHovered = ref(false);
 
-  const handleMouseMove = (e: MouseEvent) => {
-    if (options.disabled || !cardRef.value) return;
+  // Хелпер для проверки мобильных устройств
+  const isTouchDevice = () => {
+    return typeof window !== 'undefined' && ('ontouchstart' in window || navigator.maxTouchPoints > 0);
+  };
 
-    const rect = cardRef.value.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
+  const handleMouseEnter = (e: MouseEvent) => {
+    if (props.disabled) return;
+    if (isTouchDevice() && !props.tiltOnTouch) return;
 
-    if (options.glow) {
-      glowX.value = x;
-      glowY.value = y;
-    }
+    isHovered.value = true;
 
-    if (options.tilt) {
-      const normX = (x / rect.width) - 0.5;
-      const normY = (y / rect.height) - 0.5;
-
-      const tiltX = -(normY * options.maxTilt);
-      const tiltY = normX * options.maxTilt;
-
+    if (props.scaleOnHover) {
       gsap.to(cardRef.value, {
-        rotateX: tiltX,
-        rotateY: tiltY,
-        duration: options.hoverDuration,
-        ease: options.hoverEase,
+        scale: props.hoverScale,
+        duration: props.hoverDuration,
+        ease: props.hoverEase,
         overwrite: 'auto'
       });
     }
   };
 
-  const handleMouseEnter = () => {
-    if (options.disabled) return;
-    isHovered.value = true;
+  const handleMouseMove = (e: MouseEvent | TouchEvent) => {
+    if (props.disabled || !cardRef.value) return;
     
-    if (cardRef.value && options.scaleOnHover) {
+    const isTouch = 'touches' in e;
+    if (isTouch && !props.tiltOnTouch) return;
+
+    // Извлекаем нативный клиентский X и Y в зависимости от типа события
+    const clientX = isTouch ? e.touches[0].clientX : (e as MouseEvent).clientX;
+    const clientY = isTouch ? e.touches[0].clientY : (e as MouseEvent).clientY;
+
+    const rect = cardRef.value.getBoundingClientRect();
+    
+    // Координаты курсора/пальца относительно самой карточки
+    const x = clientX - rect.left;
+    const y = clientY - rect.top;
+
+    glowX.value = x;
+    glowY.value = y;
+
+    if (props.tilt) {
+      // Вычисляем угол наклона от центра карточки
+      const centerX = rect.width / 2;
+      const centerY = rect.height / 2;
+      const rotateX = -((y - centerY) / centerY) * props.maxTilt;
+      const rotateY = ((x - centerX) / centerX) * props.maxTilt;
+
       gsap.to(cardRef.value, {
-        scale: options.hoverScale,
-        z: 10,
-        duration: options.hoverDuration,
-        ease: options.hoverEase
+        rotateX: rotateX,
+        rotateY: rotateY,
+        duration: 0.3,
+        ease: 'power2.out',
+        overwrite: 'auto'
       });
     }
   };
 
-  const handleMouseLeave = () => {
-    if (options.disabled) return;
+  const handleMouseLeave = (e?: MouseEvent | TouchEvent) => {
     isHovered.value = false;
     if (!cardRef.value) return;
 
-    const resetTargets: gsap.TweenVars = {
-      duration: options.hoverDuration * 1.5,
-      ease: options.hoverEase,
+    // Плавный сброс трансформации в дефолтное состояние
+    gsap.to(cardRef.value, {
+      rotateX: 0,
+      rotateY: 0,
+      scale: 1,
+      duration: props.hoverDuration,
+      ease: props.hoverEase,
       overwrite: 'auto'
-    };
-
-    if (options.tilt) {
-      resetTargets.rotateX = 0;
-      resetTargets.rotateY = 0;
-    }
-    
-    if (options.scaleOnHover) {
-      resetTargets.scale = 1;
-      resetTargets.z = 0;
-    }
-
-    if (options.tilt || options.scaleOnHover) {
-      gsap.to(cardRef.value, resetTargets);
-    }
+    });
   };
 
   return {

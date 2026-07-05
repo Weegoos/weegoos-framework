@@ -185,6 +185,70 @@
       <p style="color: white;">Интерактивная карточка с эмиттером событий.</p>
     </WCard>
 
+<div class="sandbox-touch-demo" style="display: flex; flex-direction: column; gap: 32px; width: 100%;">
+  
+  <div style="display: flex; flex-direction: column; gap: 8px;">
+    <span style="color: #ef4444; font-family: sans-serif; font-weight: bold; font-size: 14px;">
+      🔴 ДЕФОЛТ (tiltOnTouch = false)
+    </span>
+    <WCard 
+      width="100%" 
+      max-width="400px"
+      height="220px"
+      background="#111115"
+      borderColor="rgba(255,255,255,0.05)"
+    >
+      <div style="display: flex; flex-direction: column; justify-content: space-between; height: 100%;">
+        <p style="color: #9ca3af; font-family: sans-serif; font-size: 14px; margin: 0;">
+          Попробуй водить пальцем по этой карточке.
+        </p>
+        <span style="color: #6b7280; font-family: monospace; font-size: 13px;">
+          Статус: Эффект заблокирован, страница скроллится нативно.
+        </span>
+      </div>
+    </WCard>
+  </div>
+
+  <div style="display: flex; flex-direction: column; gap: 8px;">
+    <span style="color: #10b981; font-family: sans-serif; font-weight: bold; font-size: 14px;">
+      🟢 С ТАЧ-ПОДДЕРЖКОЙ (tiltOnTouch = true)
+    </span>
+    <WCard 
+      :tiltOnTouch="true" 
+      width="100%" 
+      max-width="400px"
+      height="220px"
+      background="#120d24"
+      borderColor="rgba(168, 85,  purple, 0.2)"
+      hoverBorderColor="#a855f7"
+      glowColor="rgba(168, 85, 247, 0.4)"
+      :glowSize="250"
+    >
+      <template #glow="{ x, y, isHovered }">
+        <div style="position: absolute; padding: 16px; top: 0; right: 0; color: #a855f7; font-family: monospace; font-size: 12px; z-index: 10;">
+          <div v-if="isHovered">
+            X: {{ Math.round(x) }}px <br>
+            Y: {{ Math.round(y) }}px
+          </div>
+          <div v-else style="color: #6b7280;">Палец убран</div>
+        </div>
+      </template>
+
+      <div style="display: flex; flex-direction: column; justify-content: space-between; height: 100%; position: relative; z-index: 2;">
+        <div>
+          <h4 style="color: white; font-family: sans-serif; margin: 0 0 8px 0;">3D Тач-Эффект</h4>
+          <p style="color: #c084fc; font-family: sans-serif; font-size: 14px; margin: 0; line-height: 1.4;">
+            Нажми и веди пальцем. Карточка начнет плавно изгибаться под нажатием, а фиолетовый неоновый свет будет следовать строго за твоим пальцем!
+          </p>
+        </div>
+        <span style="color: #10b981; font-family: monospace; font-size: 13px; font-weight: bold;">
+          Статус: Touch API слушает прикосновения
+        </span>
+      </div>
+    </WCard>
+  </div>
+
+</div>
   </div>
 </template>
 
