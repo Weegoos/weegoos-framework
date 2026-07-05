@@ -24,6 +24,9 @@ interface Props {
   shadow?: boolean | string;
   hoverShadow?: string;
 
+  // Тип курсора (pointer, grab, default и т.д.)
+  cursor?: string;
+
   // Токены Weegoos Framework
   borderRadius?: string;
   background?: string;
@@ -50,6 +53,9 @@ const props = withDefaults(defineProps<Props>(), {
   
   shadow: true,
   hoverShadow: undefined,
+
+  // Курсор по умолчанию
+  cursor: 'default',
   
   borderRadius: '12px',
   background: '#13141c',
@@ -61,7 +67,6 @@ const props = withDefaults(defineProps<Props>(), {
 const cardRef = ref<HTMLElement | null>(null);
 const slots = useSlots();
 
-// Проверяем, использует ли разработчик слоты структуры, чтобы включить автоматический layout
 const hasStructuredLayout = computed(() => !!(slots.header || slots.footer));
 
 const {
@@ -103,6 +108,9 @@ const cardStyles = computed(() => ({
   '--w-card-padding': props.padding,
   '--w-card-shadow': computedShadow.value,
   '--w-card-shadow-hover': computedHoverShadow.value,
+  
+  // Передаем динамический курсор
+  '--w-card-cursor': props.cursor,
 }));
 </script>
 
@@ -127,7 +135,6 @@ const cardStyles = computed(() => ({
         }"
       ></div>
 
-      <!-- Контентная зона с авто-лейаутом -->
       <div 
         class="w-card-content"
         :class="{ 'w-card-layout-structured': hasStructuredLayout }"
@@ -164,6 +171,10 @@ const cardStyles = computed(() => ({
   border-radius: var(--w-card-radius);
   padding: var(--w-card-padding);
   box-shadow: var(--w-card-shadow);
+  
+  /* Применяем кастомный курсор */
+  cursor: var(--w-card-cursor);
+  
   box-sizing: border-box;
   overflow: hidden;
   transform-style: preserve-3d;
@@ -195,7 +206,6 @@ const cardStyles = computed(() => ({
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Автоматическая премиальная раскладка */
 .w-card-layout-structured {
   display: flex;
   flex-direction: column;

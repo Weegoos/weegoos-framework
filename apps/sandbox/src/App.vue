@@ -147,6 +147,22 @@
   </template>
 </WCard>
 
+<WCard 
+  width="400px" 
+  height="200px"
+  cursor="pointer"
+>
+  <p style="color: white;">Эта карточка кликабельна (cursor="pointer")</p>
+</WCard>
+
+<WCard 
+  width="400px" 
+  height="200px"
+  cursor="grab"
+>
+  <p style="color: white;">Эту карточку можно перетаскивать (cursor="grab")</p>
+</WCard>
+
   </div>
 </template>
 
