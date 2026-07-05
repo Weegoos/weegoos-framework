@@ -6,10 +6,13 @@ interface Props {
   variant?: 'primary' | 'secondary' | 'outline' | 'ghost';
   bgColor?: string;
   textColor?: string;
-  magnetic?: boolean;       // Включает магнитный эффект. По умолчанию: false
-  radius?: number;          // Радиус магнитной зоны в px
+  magnetic?: boolean;
+  radius?: number;
   force?: number;
   disabled?: boolean;
+
+  width?: string | number;
+  height?: string | number;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -18,6 +21,33 @@ const props = withDefaults(defineProps<Props>(), {
   radius: 80,
   force: 0.35,
   disabled: false
+});
+
+const sizeStyle = computed(() => {
+  const width =
+    props.width != null
+      ? typeof props.width === 'number'
+        ? `${props.width}px`
+        : props.width
+      : undefined;
+
+  const height =
+    props.height != null
+      ? typeof props.height === 'number'
+        ? `${props.height}px`
+        : props.height
+      : undefined;
+
+  const isCircle =
+    width &&
+    height &&
+    width === height;
+
+  return {
+    width,
+    height,
+    borderRadius: isCircle ? '9999px' : undefined
+  };
 });
 
 const emit = defineEmits<{
@@ -131,9 +161,10 @@ onUnmounted(() => {
       ref="buttonRef" 
       :class="['w-button', `w-button--${variant}`, { 'w-button--disabled': disabled }]"
       :style="{
-        backgroundColor: bgColor,
-        color: textColor
-      }"
+      backgroundColor: bgColor,
+      color: textColor,
+      ...sizeStyle
+     }"
       @click="handleClick"
       @mouseleave="resetButton"
     >
@@ -168,6 +199,7 @@ onUnmounted(() => {
   will-change: transform;
   white-space: nowrap;
   transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+   box-sizing: border-box;
 }
 
 .w-button:not(.w-button--disabled):hover {
