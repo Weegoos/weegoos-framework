@@ -1,0 +1,85 @@
+/* Дизайн-токены и переменные Weegoos */
+:root {
+  --wg-font-sans: 'Inter', 'Geist', system-ui, -apple-system, sans-serif;
+  --wg-bg-main: #0a0b0d;
+  --wg-bg-card: #13141c;
+  
+  /* Фирменная неоновая палитра */
+  --wg-brand: #00dc82;
+  --wg-brand-muted: rgba(0, 220, 130, 0.1);
+  --wg-brand-dim: rgba(0, 220, 130, 0.2);
+  --wg-brand-glow: rgba(0, 220, 130, 0.08);
+
+  /* Текст и границы */
+  --wg-text-white: #ffffff;
+  --wg-text-secondary: #8a8f98;
+  --wg-text-muted: #4b4e56;
+  --wg-border-white-dim: rgba(255, 255, 255, 0.05);
+}
+
+/* Глобальный сброс для демонстрационного окружения */
+body {
+  margin: 0;
+  background-color: var(--wg-bg-main);
+  color: var(--wg-text-white);
+  font-family: var(--wg-font-sans);
+  min-height: 100vh;
+}
+
+/* --- Утилиты раскладки (Flexbox) --- */
+.wg-flex { display: flex; }
+.wg-flex-col { flex-direction: column; }
+.wg-justify-center { justify-content: center; }
+.wg-justify-between { justify-content: space-between; }
+.wg-items-center { align-items: center; }
+.wg-h-full { height: 100%; }
+.wg-w-8 { width: 32px; }
+.wg-h-8 { height: 32px; }
+
+/* --- Отступы (Spacing) --- */
+.wg-p-10 { padding: 40px; }
+.wg-px-2 { padding-left: 8px; padding-right: 8px; }
+.wg-py-0.5 { padding-top: 2px; padding-bottom: 2px; }
+.wg-pt-3 { padding-top: 12px; }
+.wg-m-0 { margin: 0; }
+.wg-mb-1\.5 { margin-bottom: 6px; }
+.wg-my-auto { margin-top: auto; margin-bottom: auto; }
+
+/* --- Стилизация текста и шрифтов --- */
+.wg-font-sans { font-family: var(--wg-font-sans); }
+.wg-font-mono { font-family: monospace; }
+.wg-font-semibold { font-weight: 600; }
+.wg-text-white { color: var(--wg-text-white); }
+.wg-text-secondary { color: var(--wg-text-secondary); }
+.wg-text-muted { color: var(--wg-text-muted); }
+.wg-text-brand { color: var(--wg-brand); }
+.wg-text-14 { font-size: 14px; }
+.wg-text-sm { font-size: 13px; }
+.wg-text-xs { font-size: 11px; }
+.wg-text-base { font-size: 16px; }
+.wg-uppercase { text-transform: uppercase; }
+.wg-tracking-wider { letter-spacing: 0.05em; }
+.wg-tracking-tight { letter-spacing: -0.02em; }
+.wg-leading-relaxed { line-height: 1.5; }
+
+/* --- Границы и фоны --- */
+.wg-bg-brand-muted { background-color: var(--wg-brand-muted); }
+.wg-bg-brand-glow { background-color: var(--wg-brand-glow); }
+.wg-border { border: 1px solid transparent; }
+.wg-border-brand-dim { border-color: var(--wg-brand-dim); }
+.wg-border-white-dim { border-color: var(--wg-border-white-dim); }
+.wg-border-t { border-top-width: 1px; border-top-style: solid; }
+.wg-rounded-lg { border-radius: 8px; }
+.wg-rounded-md { border-radius: 4px; }
+
+/* --- Анимации и интерактив --- */
+.wg-transition-all { transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+.wg-duration-300 { transition-duration: 300ms; }
+
+/* Реализация логики группы для ховера */
+.wg-group:hover .group-hover\:wg-translate-x-1 {
+  transform: translateX(4px);
+}
+.wg-group:hover .group-hover\:wg-text-brand {
+  color: var(--wg-brand);
+}

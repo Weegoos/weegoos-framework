@@ -1,0 +1,10 @@
+{
+  "name": "@weegoos/core",
+  "version": "0.0.1",
+  "type": "module",
+  "main": "./index.ts",
+  "peerDependencies": {
+    "vue": "^3.4.0",
+    "gsap": "^3.12.0"
+  }
+}
