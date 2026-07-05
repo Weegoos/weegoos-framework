@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { ref, computed, useSlots } from 'vue';
+import { ref, computed, useSlots, onMounted } from 'vue';
 import { useCardAnimation } from './composables/useCardAnimation';
+import { gsap } from 'gsap';
 import {
   RADIUS_MAP,
   SIZE_MAP,
@@ -112,6 +113,16 @@ const emit = defineEmits<{
 }>();
 
 const cardRef = ref<HTMLElement | null>(null);
+  
+
+onMounted(() => {
+  if (!cardRef.value) return;
+
+  gsap.set(cardRef.value, {
+    rotateX: 0,
+    rotateY: 0,
+  });
+});
 const slots = useSlots();
 
 const hasStructuredLayout = computed(() => !!(slots.header || slots.footer));
@@ -122,7 +133,7 @@ const {
   isHovered,
   handleMouseMove,
   handleMouseEnter,
-  handleMouseLeave
+  handleMouseLeave,
 } = useCardAnimation(cardRef, props);
 
 
@@ -337,6 +348,39 @@ const glowColor = computed(() => {
     return preset.value.glowColor;
 
   return COLOR_MAP[props.color];
+});
+
+const reset = () => {
+  if (!cardRef.value) return;
+
+  gsap.to(cardRef.value, {
+    rotateX: 0,
+    rotateY: 0,
+    duration: 0.4,
+    ease: 'power2.out',
+  });
+};
+
+const tiltTo = (x: number, y: number) => {
+  if (!cardRef.value) return;
+
+  gsap.to(cardRef.value, {
+    rotateX: -y,
+    rotateY: x,
+    duration: 0.4,
+    ease: 'power2.out',
+  });
+};
+
+const focus = () => {
+  cardRef.value?.focus();
+};
+
+defineExpose({
+  reset,
+  tiltTo,
+  focus,
+  element: cardRef,
 });
 
 const cardStyles = computed(() => ({
