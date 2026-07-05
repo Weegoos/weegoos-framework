@@ -10,12 +10,17 @@ interface Props {
   glowColor?: string;
   glowSize?: number;
   
-  // Новые пропсы для быстрого управления стилями компонента
-  borderRadius?: string;   // например, '16px' или '24px'
-  background?: string;     // цвет фона карточки
-  borderColor?: string;    // цвет дефолтной рамки
-  hoverBorderColor?: string; // цвет рамки при ховере
-  padding?: string;        // внутренние отступы
+  // Флаги управления эффектами
+  tilt?: boolean;
+  glow?: boolean;
+  scaleOnHover?: boolean;
+  
+  // Токены Weegoos Framework
+  borderRadius?: string;
+  background?: string;
+  borderColor?: string;
+  hoverBorderColor?: string;
+  padding?: string;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -26,7 +31,11 @@ const props = withDefaults(defineProps<Props>(), {
   glowColor: 'rgba(0, 220, 130, 0.12)',
   glowSize: 400,
   
-  // Дефолтные значения токенов Weegoos Framework
+  // По умолчанию все эффекты включены
+  tilt: true,
+  glow: true,
+  scaleOnHover: true,
+  
   borderRadius: '12px',
   background: '#13141c',
   borderColor: 'rgba(255, 255, 255, 0.05)',
@@ -44,7 +53,6 @@ const formatSize = (value: string | number) => {
   return typeof value === 'number' ? `${value}px` : value;
 };
 
-// Вычисляем локальные CSS-переменные для инжекта в стили
 const cardStyles = computed(() => ({
   width: formatSize(props.width),
   height: formatSize(props.height),
@@ -62,27 +70,35 @@ const handleMouseMove = (e: MouseEvent) => {
   const x = e.clientX - rect.left;
   const y = e.clientY - rect.top;
 
-  glowX.value = x;
-  glowY.value = y;
+  // Рассчитываем координаты свечения, только если оно включено
+  if (props.glow) {
+    glowX.value = x;
+    glowY.value = y;
+  }
 
-  const normX = (x / rect.width) - 0.5;
-  const normY = (y / rect.height) - 0.5;
+  // Запускаем tilt-анимацию, только если переключатель активен
+  if (props.tilt) {
+    const normX = (x / rect.width) - 0.5;
+    const normY = (y / rect.height) - 0.5;
 
-  const tiltX = -(normY * props.maxTilt);
-  const tiltY = normX * props.maxTilt;
+    const tiltX = -(normY * props.maxTilt);
+    const tiltY = normX * props.maxTilt;
 
-  gsap.to(cardRef.value, {
-    rotateX: tiltX,
-    rotateY: tiltY,
-    duration: 0.3,
-    ease: 'power2.out',
-    overwrite: 'auto'
-  });
+    gsap.to(cardRef.value, {
+      rotateX: tiltX,
+      rotateY: tiltY,
+      duration: 0.3,
+      ease: 'power2.out',
+      overwrite: 'auto'
+    });
+  }
 };
 
 const handleMouseEnter = () => {
   isHovered.value = true;
-  if (cardRef.value) {
+  
+  // Анимируем увеличение, только если scaleOnHover активен
+  if (cardRef.value && props.scaleOnHover) {
     gsap.to(cardRef.value, {
       scale: 1.015,
       z: 10,
@@ -96,22 +112,34 @@ const handleMouseLeave = () => {
   isHovered.value = false;
   if (!cardRef.value) return;
 
-  gsap.to(cardRef.value, {
-    rotateX: 0,
-    rotateY: 0,
-    scale: 1,
-    z: 0,
+  // Возвращаем карту в дефолтное состояние с проверкой, что именно нужно сбрасывать
+  const resetTargets: gsap.TweenVars = {
     duration: 0.6,
     ease: 'power2.out',
     overwrite: 'auto'
-  });
+  };
+
+  if (props.tilt) {
+    resetTargets.rotateX = 0;
+    resetTargets.rotateY = 0;
+  }
+  
+  if (props.scaleOnHover) {
+    resetTargets.scale = 1;
+    resetTargets.z = 0;
+  }
+
+  // Запускаем сброс анимации только при наличии активных флагов
+  if (props.tilt || props.scaleOnHover) {
+    gsap.to(cardRef.value, resetTargets);
+  }
 };
 </script>
 
 <template>
   <div 
     class="w-card-perspective" 
-    :style="{ perspective: `${perspective}px`, ...cardStyles }"
+    :style="{ perspective: tilt ? `${perspective}px` : undefined, ...cardStyles }"
   >
     <div
       ref="cardRef"
@@ -120,8 +148,9 @@ const handleMouseLeave = () => {
       @mouseenter="handleMouseEnter"
       @mouseleave="handleMouseLeave"
     >
-      <!-- Слой интерактивного свечения -->
+      <!-- Слой интерактивного свечения рендерится только при glow="true" -->
       <div
+        v-if="glow"
         class="w-card-glow"
         :style="{
           opacity: isHovered ? 1 : 0,
@@ -130,7 +159,11 @@ const handleMouseLeave = () => {
       ></div>
 
       <!-- Слот контента -->
-      <div class="w-card-content">
+      <!-- Динамически убираем translateZ, если tilt отключен, чтобы избежать лишнего размытия текста -->
+      <div 
+        class="w-card-content"
+        :style="{ transform: tilt ? 'translateZ(20px)' : 'none' }"
+      >
         <slot />
       </div>
     </div>
@@ -148,7 +181,6 @@ const handleMouseLeave = () => {
   width: 100%;
   height: 100%;
   
-  /* Использование локальных переменных компонента */
   background: var(--w-card-bg);
   border: 1px solid var(--w-card-border);
   border-radius: var(--w-card-radius);
@@ -163,7 +195,6 @@ const handleMouseLeave = () => {
 
 .w-card:hover {
   border-color: var(--w-card-border-hover);
-  /* При ховере слегка подсвечиваем подложку, завязываясь на цвет фона */
   background: linear-gradient(0deg, rgba(255, 255, 255, 0.01), rgba(255, 255, 255, 0.01)), var(--w-card-bg);
 }
 
@@ -182,7 +213,6 @@ const handleMouseLeave = () => {
 .w-card-content {
   position: relative;
   z-index: 2;
-  transform: translateZ(20px); 
   height: 100%;
 }
 </style>
