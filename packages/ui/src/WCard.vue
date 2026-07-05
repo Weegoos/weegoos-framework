@@ -9,33 +9,31 @@ interface Props {
   perspective?: number;
   glowColor?: string;
   glowSize?: number;
+  glowOpacity?: number;
+  glowBlur?: string | number;
   
-  // Флаги управления эффектами
   tilt?: boolean;
   glow?: boolean;
   scaleOnHover?: boolean;
+  disabled?: boolean;
 
-  // Интенсивность и физика ховера (GSAP)
   hoverScale?: number;
   hoverDuration?: number;
   hoverEase?: string;
   
-  // Управление тенями
   shadow?: boolean | string;
   hoverShadow?: string;
 
-  // Тип курсора
   cursor?: string;
+  overflow?: string;
 
-  // Настройка CSS переходов (border, background, box-shadow)
-  transition?: string;
-
-  // Токены Weegoos Framework
   borderRadius?: string;
   background?: string;
+  borderWidth?: string | number;
   borderColor?: string;
   hoverBorderColor?: string;
   padding?: string;
+  transition?: string;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -45,10 +43,13 @@ const props = withDefaults(defineProps<Props>(), {
   perspective: 1000,
   glowColor: 'rgba(0, 220, 130, 0.12)',
   glowSize: 400,
+  glowOpacity: 1,
+  glowBlur: '0px',
   
   tilt: true,
   glow: true,
   scaleOnHover: true,
+  disabled: false,
 
   hoverScale: 1.015,
   hoverDuration: 0.4,
@@ -58,12 +59,13 @@ const props = withDefaults(defineProps<Props>(), {
   hoverShadow: undefined,
 
   cursor: 'default',
+  overflow: 'hidden',
 
-  // Дефолтный премиальный транзишн фреймворка Weegoos
   transition: 'border-color 0.4s ease, background-color 0.4s ease, box-shadow 0.4s ease',
   
-  borderRadius: '12px',
+  borderRadius: '12px', // Дефолтный радиус, углы всегда будут мягкими
   background: '#13141c',
+  borderWidth: '1px',
   borderColor: 'rgba(255, 255, 255, 0.05)',
   hoverBorderColor: 'rgba(255, 255, 255, 0.12)',
   padding: '24px'
@@ -97,7 +99,7 @@ const computedShadow = computed(() => {
 });
 
 const computedHoverShadow = computed(() => {
-  if (props.shadow === false) return 'none';
+  if (props.shadow === false || props.disabled) return computedShadow.value;
   if (props.hoverShadow) return props.hoverShadow;
   if (props.shadow === true) return DEFAULT_HOVER_SHADOW;
   return props.shadow; 
@@ -108,43 +110,47 @@ const cardStyles = computed(() => ({
   height: formatSize(props.height),
   '--w-card-radius': props.borderRadius,
   '--w-card-bg': props.background,
+  '--w-card-border-width': formatSize(props.borderWidth),
   '--w-card-border': props.borderColor,
-  '--w-card-border-hover': props.hoverBorderColor,
+  '--w-card-border-hover': props.disabled ? props.borderColor : props.hoverBorderColor,
   '--w-card-padding': props.padding,
   '--w-card-shadow': computedShadow.value,
   '--w-card-shadow-hover': computedHoverShadow.value,
-  '--w-card-cursor': props.cursor,
-  
-  // Прокидываем значение транзишна в CSS-переменную
+  '--w-card-cursor': props.disabled ? 'default' : props.cursor,
+  '--w-card-overflow': props.overflow,
   '--w-card-transition': props.transition,
+  '--w-card-glow-opacity': props.glowOpacity.toString(),
 }));
 </script>
 
 <template>
   <div 
     class="w-card-perspective" 
-    :style="{ perspective: tilt ? `${perspective}px` : undefined, ...cardStyles }"
+    :style="{ perspective: (tilt && !disabled) ? `${perspective}px` : undefined, ...cardStyles }"
   >
     <div
       ref="cardRef"
       class="w-card"
+      :class="{ 'w-card-disabled': disabled }"
       @mousemove="handleMouseMove"
       @mouseenter="handleMouseEnter"
       @mouseleave="handleMouseLeave"
     >
+      <!-- Слой свечения теперь имеет жесткий border-radius родителя -->
       <div
-        v-if="glow"
+        v-if="glow && !disabled"
         class="w-card-glow"
-        :style="{
-          opacity: isHovered ? 1 : 0,
-          background: `radial-gradient(${glowSize}px circle at ${glowX}px ${glowY}px, ${glowColor}, transparent)`,
-        }"
+       :style="{
+    opacity: isHovered ? 'var(--w-card-glow-opacity)' : 0,
+    filter: `blur(${formatSize(props.glowBlur)})`,
+    background: `radial-gradient(${glowSize}px circle at ${glowX}px ${glowY}px, ${glowColor}, transparent)`,
+  }"
       ></div>
 
       <div 
         class="w-card-content"
         :class="{ 'w-card-layout-structured': hasStructuredLayout }"
-        :style="{ transform: tilt ? 'translateZ(20px)' : 'none' }"
+        :style="{ transform: (tilt && !disabled) ? 'translateZ(20px)' : 'none' }"
       >
         <div v-if="$slots.header" class="w-card-header">
           <slot name="header" />
@@ -173,21 +179,26 @@ const cardStyles = computed(() => ({
   width: 100%;
   height: 100%;
   background: var(--w-card-bg);
-  border: 1px solid var(--w-card-border);
+  border: var(--w-card-border-width) solid var(--w-card-border);
+  
+  /* Использование переменной */
   border-radius: var(--w-card-radius);
+  
   padding: var(--w-card-padding);
   box-shadow: var(--w-card-shadow);
   cursor: var(--w-card-cursor);
+  overflow: var(--w-card-overflow);
   box-sizing: border-box;
-  overflow: hidden;
+  
+  /* Фикс для Safari/Chrome, сохраняющий скругление при сложных 3D трансформациях */
+  isolation: isolate;
+  
   transform-style: preserve-3d;
   will-change: transform, box-shadow;
-  
-  /* Используем динамический transition */
   transition: var(--w-card-transition);
 }
 
-.w-card:hover {
+.w-card:not(.w-card-disabled):hover {
   border-color: var(--w-card-border-hover);
   background: linear-gradient(0deg, rgba(255, 255, 255, 0.01), rgba(255, 255, 255, 0.01)), var(--w-card-bg);
   box-shadow: var(--w-card-shadow-hover);
@@ -198,6 +209,10 @@ const cardStyles = computed(() => ({
   top: 0; left: 0; right: 0; bottom: 0;
   pointer-events: none;
   z-index: 1;
+  
+  /* Важно: заставляем слой свечения уважать радиус родителя */
+  border-radius: calc(var(--w-card-radius) - var(--w-card-border-width));
+  
   will-change: background, opacity;
   transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }

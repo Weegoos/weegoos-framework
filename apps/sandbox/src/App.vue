@@ -112,73 +112,41 @@
   <span style="color: #666; font-family: sans-serif;">Flat Style (:shadow="false")</span>
 </WCard>
 
-<!-- 9. ТЕСТ: Глубокая кастомная неоновая тень -->
+<!-- Тест 1: Статичная карточка-контейнер без анимаций и со специфичным бордером -->
+<WCard 
+  disabled
+  borderWidth="2px"
+  borderColor="#ef4444"
+  width="400px"
+  height="200px"
+>
+  <p style="color: white;">Анимации отключены (:disabled="true"). Граница 2px.</p>
+</WCard>
+
+<!-- Тест 2: Мягкое неоновое размытое свечение с кастомным Opacity -->
 <WCard 
   width="400px" 
-  height="250px"
-  background="#0a0712"
-  borderColor="rgba(139, 92, 246, 0.08)"
-  hoverBorderColor="rgba(139, 92, 246, 0.3)"
-  glowColor="rgba(139, 92, 246, 0.15)"
-  glowSize="350"
+  height="200px"
+  glowColor="rgba(244, 63, 94, 0.4)"
+  :glowOpacity="0.8"
+  glowBlur="20px"
+  glowSize="300"
   borderRadius="16px"
-  padding="32px"
-  :hoverScale="1.02"
-  shadow="0 4px 24px rgba(0, 0, 0, 0.6), 0 1px 2px rgba(139, 92, 246, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.03)"
-  hoverShadow="0 40px 80px -16px rgba(0, 0, 0, 0.8), 0 0 50px -10px rgba(139, 92, 246, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.07)"
 >
-  <template #header>
-    <div style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: #a78bfa; opacity: 0.85;">
-      Premium Feature
-    </div>
-    <h3 style="font-size: 20px; font-weight: 500; letter-spacing: -0.02em; color: #ffffff; margin: 0;">
-      Custom Purple Shadows
-    </h3>
-  </template>
-
-  <!-- Описание автоматически падает в центральную зону -->
-  <p style="font-size: 14px; line-height: 1.5; color: #9ca3af; margin: 8px 0 0 0; font-weight: 400;">
-    Многослойные тени и внутреннее тиснение `inset` создают иллюзию физического стекла.
-  </p>
-
-  <template #footer>
-    <span style="font-size: 13px; color: #6b7280; font-weight: 400;">Weegoos Engine v1.0</span>
-    <WButton magnetic radius="60" style="--w-btn-bg: #8b5cf6;">Explore</WButton>
-  </template>
+  <p style="color: white;">Мягкий Glow с блюром 20px и opacity 0.8</p>
 </WCard>
 
+<!-- Тест 3: Карточка с выходящим за рамки контентом (overflow="visible") -->
 <WCard 
   width="400px" 
   height="200px"
-  cursor="pointer"
+  overflow="visible"
+  background="#1e1b4b"
 >
-  <p style="color: white;">Эта карточка кликабельна (cursor="pointer")</p>
-</WCard>
-
-<WCard 
-  width="400px" 
-  height="200px"
-  cursor="grab"
->
-  <p style="color: white;">Эту карточку можно перетаскивать (cursor="grab")</p>
-</WCard>
-
-<!-- Резкий, ультрабыстрый отклик (например, для игровых дашбордов) -->
-<WCard 
-  width="400px" 
-  height="200px"
-  transition="all 0.1s linear"
->
-  <p style="color: white;">Ультрабыстрый переход (transition="all 0.1s linear")</p>
-</WCard>
-
-<!-- Инертный, глубокий и медленный переход -->
-<WCard 
-  width="400px" 
-  height="200px"
-  transition="all 0.8s cubic-bezier(0.16, 1, 0.3, 1)"
->
-  <p style="color: white;">Медленный инерционный переход</p>
+  <div style="position: absolute; top: -20px; right: -20px; background: #f59e0b; padding: 8px; border-radius: 8px; color: black; font-weight: bold;">
+    Badge Out
+  </div>
+  <p style="color: white;">Элементы могут вылезать за пределы контейнера.</p>
 </WCard>
 
   </div>

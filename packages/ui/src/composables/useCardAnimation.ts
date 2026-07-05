@@ -9,6 +9,7 @@ interface AnimationOptions {
   hoverScale: number;
   hoverDuration: number;
   hoverEase: string;
+  disabled: boolean; // Добавили флаг
 }
 
 export function useCardAnimation(
@@ -20,7 +21,7 @@ export function useCardAnimation(
   const isHovered = ref(false);
 
   const handleMouseMove = (e: MouseEvent) => {
-    if (!cardRef.value) return;
+    if (options.disabled || !cardRef.value) return;
 
     const rect = cardRef.value.getBoundingClientRect();
     const x = e.clientX - rect.left;
@@ -49,6 +50,7 @@ export function useCardAnimation(
   };
 
   const handleMouseEnter = () => {
+    if (options.disabled) return;
     isHovered.value = true;
     
     if (cardRef.value && options.scaleOnHover) {
@@ -62,6 +64,7 @@ export function useCardAnimation(
   };
 
   const handleMouseLeave = () => {
+    if (options.disabled) return;
     isHovered.value = false;
     if (!cardRef.value) return;
 
