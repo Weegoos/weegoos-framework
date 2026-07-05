@@ -149,6 +149,17 @@
   <p style="color: white;">Элементы могут вылезать за пределы контейнера.</p>
 </WCard>
 
+<WCard as="section" width="400px">
+  <h3 style="color: white; margin: 0;">Заголовок статьи</h3>
+  <!-- Используем HTML-сущности &lt; и &gt; -->
+  <p style="color: #9ca3af;">Этот контейнер сгенерирован в DOM как тег &lt;article&gt;.</p>
+</WCard>
+
+<!-- Рендерится как полноценная кликабельная HTML-кнопка -->
+<WCard as="button" width="400px" cursor="pointer">
+  <span style="color: white;">Интерактивная кнопка-карточка</span>
+</WCard>
+
   </div>
 </template>
 

@@ -27,6 +27,10 @@ interface Props {
   cursor?: string;
   overflow?: string;
 
+  // Динамический HTML-тег (полиморфизм)
+  as?: string;
+
+  // Токены Weegoos Framework
   borderRadius?: string;
   background?: string;
   borderWidth?: string | number;
@@ -60,10 +64,12 @@ const props = withDefaults(defineProps<Props>(), {
 
   cursor: 'default',
   overflow: 'hidden',
+  
+  // По умолчанию это обычный div
+  as: 'div',
 
   transition: 'border-color 0.4s ease, background-color 0.4s ease, box-shadow 0.4s ease',
-  
-  borderRadius: '12px', // Дефолтный радиус, углы всегда будут мягкими
+  borderRadius: '12px',
   background: '#13141c',
   borderWidth: '1px',
   borderColor: 'rgba(255, 255, 255, 0.05)',
@@ -128,7 +134,9 @@ const cardStyles = computed(() => ({
     class="w-card-perspective" 
     :style="{ perspective: (tilt && !disabled) ? `${perspective}px` : undefined, ...cardStyles }"
   >
-    <div
+    <!-- Используем динамический компонент :is для рендеринга переданного HTML-тега -->
+    <component
+      :is="as"
       ref="cardRef"
       class="w-card"
       :class="{ 'w-card-disabled': disabled }"
@@ -136,15 +144,14 @@ const cardStyles = computed(() => ({
       @mouseenter="handleMouseEnter"
       @mouseleave="handleMouseLeave"
     >
-      <!-- Слой свечения теперь имеет жесткий border-radius родителя -->
       <div
         v-if="glow && !disabled"
         class="w-card-glow"
-       :style="{
-    opacity: isHovered ? 'var(--w-card-glow-opacity)' : 0,
-    filter: `blur(${formatSize(props.glowBlur)})`,
-    background: `radial-gradient(${glowSize}px circle at ${glowX}px ${glowY}px, ${glowColor}, transparent)`,
-  }"
+        :style="{
+            opacity: isHovered ? 'var(--w-card-glow-opacity)' : 0,
+            filter: `blur(${formatSize(props.glowBlur)})`,
+            background: `radial-gradient(${glowSize}px circle at ${glowX}px ${glowY}px, ${glowColor}, transparent)`,
+          }"
       ></div>
 
       <div 
@@ -164,7 +171,7 @@ const cardStyles = computed(() => ({
           <slot name="footer" />
         </div>
       </div>
-    </div>
+    </component>
   </div>
 </template>
 
@@ -180,19 +187,19 @@ const cardStyles = computed(() => ({
   height: 100%;
   background: var(--w-card-bg);
   border: var(--w-card-border-width) solid var(--w-card-border);
-  
-  /* Использование переменной */
   border-radius: var(--w-card-radius);
-  
   padding: var(--w-card-padding);
   box-shadow: var(--w-card-shadow);
   cursor: var(--w-card-cursor);
   overflow: var(--w-card-overflow);
   box-sizing: border-box;
   
-  /* Фикс для Safari/Chrome, сохраняющий скругление при сложных 3D трансформациях */
-  isolation: isolate;
+  /* Сброс дефолтных стилей браузера на случай, если передан тег 'button' */
+  text-align: left;
+  color: inherit;
+  font-size: inherit;
   
+  isolation: isolate;
   transform-style: preserve-3d;
   will-change: transform, box-shadow;
   transition: var(--w-card-transition);
@@ -209,10 +216,7 @@ const cardStyles = computed(() => ({
   top: 0; left: 0; right: 0; bottom: 0;
   pointer-events: none;
   z-index: 1;
-  
-  /* Важно: заставляем слой свечения уважать радиус родителя */
   border-radius: calc(var(--w-card-radius) - var(--w-card-border-width));
-  
   will-change: background, opacity;
   transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
