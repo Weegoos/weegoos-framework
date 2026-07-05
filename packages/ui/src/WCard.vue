@@ -76,6 +76,13 @@ const props = withDefaults(defineProps<Props>(), {
   padding: '24px'
 });
 
+// Объявляем события для внешнего использования
+const emit = defineEmits<{
+  (e: 'mouseenter', event: MouseEvent): void
+  (e: 'mouseleave', event: MouseEvent): void
+  (e: 'mousemove', event: MouseEvent): void
+}>();
+
 const cardRef = ref<HTMLElement | null>(null);
 const slots = useSlots();
 
@@ -89,6 +96,22 @@ const {
   handleMouseEnter,
   handleMouseLeave
 } = useCardAnimation(cardRef, props);
+
+// Обёртки для перехвата и эмиттинга событий
+const onMouseMove = (e: MouseEvent) => {
+  handleMouseMove(e);
+  emit('mousemove', e);
+};
+
+const onMouseEnter = (e: MouseEvent) => {
+  handleMouseEnter();
+  emit('mouseenter', e);
+};
+
+const onMouseLeave = (e: MouseEvent) => {
+  handleMouseLeave();
+  emit('mouseleave', e);
+};
 
 const formatSize = (value: string | number) => {
   return typeof value === 'number' ? `${value}px` : value;
@@ -138,13 +161,11 @@ const cardStyles = computed(() => ({
       ref="cardRef"
       class="w-card"
       :class="{ 'w-card-disabled': disabled }"
-      @mousemove="handleMouseMove"
-      @mouseenter="handleMouseEnter"
-      @mouseleave="handleMouseLeave"
+      @mousemove="onMouseMove"
+      @mouseenter="onMouseEnter"
+      @mouseleave="onMouseLeave"
     >
-      <!-- Контейнер для эффекта свечения -->
       <div v-if="glow && !disabled" class="w-card-glow-container">
-        <!-- Если передан кастомный слот 'glow', отдаем управление ему -->
         <slot 
           v-if="$slots.glow" 
           name="glow" 
@@ -153,7 +174,6 @@ const cardStyles = computed(() => ({
           :isHovered="isHovered" 
         />
         
-        <!-- Иначе рендерим стандартный премиальный градиент фреймворка -->
         <div
           v-else
           class="w-card-glow-default"
@@ -221,7 +241,6 @@ const cardStyles = computed(() => ({
   box-shadow: var(--w-card-shadow-hover);
 }
 
-/* Обертка, которая жестко маскирует любой glow по радиусу карточки */
 .w-card-glow-container {
   position: absolute;
   top: 0; left: 0; right: 0; bottom: 0;
@@ -269,4 +288,4 @@ const cardStyles = computed(() => ({
   justify-content: space-between;
   margin-top: 16px;
 }
-</style>
+</style>  

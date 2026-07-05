@@ -13,7 +13,8 @@
     >
       <div style="display: flex; flex-direction: column; gap: 16px; height: 100%; justify-content: space-between;">
         <span style="color: #818cf8; font-family: sans-serif; font-weight: 600;">Full Interactive (Tilt + Glow + Scale)</span>
-        <WButton magnetic radius="80">Click Me</WButton>
+        <!-- ИСПРАВЛЕНО: добавлено двоеточие перед radius -->
+        <WButton magnetic :radius="80">Click Me</WButton>
       </div>
     </WCard>
 
@@ -102,91 +103,99 @@
       <span style="color: white; font-family: sans-serif;">Default Weegoos Style</span>
     </WCard>
 
-    <!-- 8. ТЕСТ: Карточка вообще без тени (Абсолютно плоская) -->
-<WCard 
-  width="400px" 
-  height="250px"
-  :shadow="false"
-  background="#16171e"
->
-  <span style="color: #666; font-family: sans-serif;">Flat Style (:shadow="false")</span>
-</WCard>
+    <WCard 
+      width="400px" 
+      height="250px"
+      :shadow="false"
+      background="#16171e"
+    >
+      <span style="color: #666; font-family: sans-serif;">Flat Style (:shadow="false")</span>
+    </WCard>
 
-<!-- Тест 1: Статичная карточка-контейнер без анимаций и со специфичным бордером -->
-<WCard 
-  disabled
-  borderWidth="2px"
-  borderColor="#ef4444"
-  width="400px"
-  height="200px"
->
-  <p style="color: white;">Анимации отключены (:disabled="true"). Граница 2px.</p>
-</WCard>
+    <WCard 
+      disabled
+      borderWidth="2px"
+      borderColor="#ef4444"
+      width="400px"
+      height="200px"
+    >
+      <p style="color: white;">Анимации отключены (:disabled="true"). Граница 2px.</p>
+    </WCard>
 
-<!-- Тест 2: Мягкое неоновое размытое свечение с кастомным Opacity -->
-<WCard 
-  width="400px" 
-  height="200px"
-  glowColor="rgba(244, 63, 94, 0.4)"
-  :glowOpacity="0.8"
-  glowBlur="20px"
-  glowSize="300"
-  borderRadius="16px"
->
-  <p style="color: white;">Мягкий Glow с блюром 20px и opacity 0.8</p>
-</WCard>
+    <!-- Тест 2 -->
+    <WCard 
+      width="400px" 
+      height="200px"
+      glowColor="rgba(244, 63, 94, 0.4)"
+      :glowOpacity="0.8"
+      glowBlur="20px"
+      :glowSize="300"
+      borderRadius="16px"
+    >
+      <p style="color: white;">Мягкий Glow с блюром 20px и opacity 0.8</p>
+    </WCard>
 
-<!-- Тест 3: Карточка с выходящим за рамки контентом (overflow="visible") -->
-<WCard 
-  width="400px" 
-  height="200px"
-  overflow="visible"
-  background="#1e1b4b"
->
-  <div style="position: absolute; top: -20px; right: -20px; background: #f59e0b; padding: 8px; border-radius: 8px; color: black; font-weight: bold;">
-    Badge Out
-  </div>
-  <p style="color: white;">Элементы могут вылезать за пределы контейнера.</p>
-</WCard>
+    <WCard 
+      width="400px" 
+      height="200px"
+      overflow="visible"
+      background="#1e1b4b"
+    >
+      <div style="position: absolute; top: -20px; right: -20px; background: #f59e0b; padding: 8px; border-radius: 8px; color: black; font-weight: bold;">
+        Badge Out
+      </div>
+      <p style="color: white;">Элементы могут вылезать за пределы контейнера.</p>
+    </WCard>
 
-<WCard as="section" width="400px">
-  <h3 style="color: white; margin: 0;">Заголовок статьи</h3>
-  <!-- Используем HTML-сущности &lt; и &gt; -->
-  <p style="color: #9ca3af;">Этот контейнер сгенерирован в DOM как тег &lt;article&gt;.</p>
-</WCard>
+    <WCard as="section" width="400px">
+      <h3 style="color: white; margin: 0;">Заголовок статьи</h3>
+      <p style="color: #9ca3af;">Этот контейнер сгенерирован в DOM как тег &lt;article&gt;.</p>
+    </WCard>
 
-<!-- Рендерится как полноценная кликабельная HTML-кнопка -->
-<WCard as="button" width="400px" cursor="pointer">
-  <span style="color: white;">Интерактивная кнопка-карточка</span>
-</WCard>
+    <WCard as="button" width="400px" cursor="pointer">
+      <span style="color: white;">Интерактивная кнопка-карточка</span>
+    </WCard>
 
-<WCard width="400px" height="250px">
-  <!-- Кастомный Glow эффект -->
-  <template #glow="{ x, y, isHovered }">
-    <div 
-      :style="{
-        position: 'absolute',
-        width: '150px',
-        height: '150px',
-        background: 'linear-gradient(45deg, #f59e0b, #ef4444)',
-        filter: 'blur(40px)',
-        borderRadius: '30%',
-        transform: `translate(${x - 75}px, ${y - 75}px)`,
-        opacity: isHovered ? 0.6 : 0,
-        transition: 'opacity 0.3s ease',
-        pointerEvents: 'none'
-      }"
-    ></div>
-  </template>
+    <WCard width="400px" height="250px">
+      <template #glow="{ x, y, isHovered }">
+        <div 
+          :style="{
+            position: 'absolute',
+            width: '150px',
+            height: '150px',
+            background: 'linear-gradient(45deg, #f59e0b, #ef4444)',
+            filter: 'blur(40px)',
+            borderRadius: '30%',
+            transform: `translate(${x - 75}px, ${y - 75}px)`,
+            opacity: isHovered ? 0.6 : 0,
+            transition: 'opacity 0.3s ease',
+            pointerEvents: 'none'
+          }"
+        ></div>
+      </template>
 
-  <p style="color: white;">Карточка с абсолютно кастомным квадратным анимированным свечением.</p>
-</WCard>
+      <p style="color: white;">Карточка с абсолютно кастомным квадратным анимированным свечением.</p>
+    </WCard>
+
+    <WCard 
+      @mouseenter="handleCardEnter"
+      @mouseleave="handleCardLeave"
+      width="350px"
+    >
+      <p style="color: white;">Интерактивная карточка с эмиттером событий.</p>
+    </WCard>
 
   </div>
 </template>
 
-<script setup>
-// Компоненты зарегистрированы глобально фреймворком. Код чист.
+<script setup lang="ts">
+const handleCardEnter = (event: MouseEvent) => {
+  console.log('Пользователь навел мышь на премиум-карточку!', event);
+};
+
+const handleCardLeave = (event: MouseEvent) => {
+  console.log('Мышь покинула пределы карточки');
+};
 </script>
 
 <style scoped>
