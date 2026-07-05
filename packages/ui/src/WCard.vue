@@ -65,7 +65,6 @@ const props = withDefaults(defineProps<Props>(), {
   cursor: 'default',
   overflow: 'hidden',
   
-  // По умолчанию это обычный div
   as: 'div',
 
   transition: 'border-color 0.4s ease, background-color 0.4s ease, box-shadow 0.4s ease',
@@ -134,7 +133,6 @@ const cardStyles = computed(() => ({
     class="w-card-perspective" 
     :style="{ perspective: (tilt && !disabled) ? `${perspective}px` : undefined, ...cardStyles }"
   >
-    <!-- Используем динамический компонент :is для рендеринга переданного HTML-тега -->
     <component
       :is="as"
       ref="cardRef"
@@ -144,15 +142,28 @@ const cardStyles = computed(() => ({
       @mouseenter="handleMouseEnter"
       @mouseleave="handleMouseLeave"
     >
-      <div
-        v-if="glow && !disabled"
-        class="w-card-glow"
-        :style="{
+      <!-- Контейнер для эффекта свечения -->
+      <div v-if="glow && !disabled" class="w-card-glow-container">
+        <!-- Если передан кастомный слот 'glow', отдаем управление ему -->
+        <slot 
+          v-if="$slots.glow" 
+          name="glow" 
+          :x="glowX" 
+          :y="glowY" 
+          :isHovered="isHovered" 
+        />
+        
+        <!-- Иначе рендерим стандартный премиальный градиент фреймворка -->
+        <div
+          v-else
+          class="w-card-glow-default"
+          :style="{
             opacity: isHovered ? 'var(--w-card-glow-opacity)' : 0,
             filter: `blur(${formatSize(props.glowBlur)})`,
             background: `radial-gradient(${glowSize}px circle at ${glowX}px ${glowY}px, ${glowColor}, transparent)`,
           }"
-      ></div>
+        ></div>
+      </div>
 
       <div 
         class="w-card-content"
@@ -194,7 +205,6 @@ const cardStyles = computed(() => ({
   overflow: var(--w-card-overflow);
   box-sizing: border-box;
   
-  /* Сброс дефолтных стилей браузера на случай, если передан тег 'button' */
   text-align: left;
   color: inherit;
   font-size: inherit;
@@ -211,12 +221,19 @@ const cardStyles = computed(() => ({
   box-shadow: var(--w-card-shadow-hover);
 }
 
-.w-card-glow {
+/* Обертка, которая жестко маскирует любой glow по радиусу карточки */
+.w-card-glow-container {
   position: absolute;
   top: 0; left: 0; right: 0; bottom: 0;
   pointer-events: none;
   z-index: 1;
   border-radius: calc(var(--w-card-radius) - var(--w-card-border-width));
+  overflow: hidden;
+}
+
+.w-card-glow-default {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
   will-change: background, opacity;
   transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }

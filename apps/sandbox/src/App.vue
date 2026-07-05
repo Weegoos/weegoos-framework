@@ -160,6 +160,28 @@
   <span style="color: white;">Интерактивная кнопка-карточка</span>
 </WCard>
 
+<WCard width="400px" height="250px">
+  <!-- Кастомный Glow эффект -->
+  <template #glow="{ x, y, isHovered }">
+    <div 
+      :style="{
+        position: 'absolute',
+        width: '150px',
+        height: '150px',
+        background: 'linear-gradient(45deg, #f59e0b, #ef4444)',
+        filter: 'blur(40px)',
+        borderRadius: '30%',
+        transform: `translate(${x - 75}px, ${y - 75}px)`,
+        opacity: isHovered ? 0.6 : 0,
+        transition: 'opacity 0.3s ease',
+        pointerEvents: 'none'
+      }"
+    ></div>
+  </template>
+
+  <p style="color: white;">Карточка с абсолютно кастомным квадратным анимированным свечением.</p>
+</WCard>
+
   </div>
 </template>
 
