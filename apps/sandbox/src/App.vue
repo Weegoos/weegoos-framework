@@ -163,6 +163,24 @@
   <p style="color: white;">Эту карточку можно перетаскивать (cursor="grab")</p>
 </WCard>
 
+<!-- Резкий, ультрабыстрый отклик (например, для игровых дашбордов) -->
+<WCard 
+  width="400px" 
+  height="200px"
+  transition="all 0.1s linear"
+>
+  <p style="color: white;">Ультрабыстрый переход (transition="all 0.1s linear")</p>
+</WCard>
+
+<!-- Инертный, глубокий и медленный переход -->
+<WCard 
+  width="400px" 
+  height="200px"
+  transition="all 0.8s cubic-bezier(0.16, 1, 0.3, 1)"
+>
+  <p style="color: white;">Медленный инерционный переход</p>
+</WCard>
+
   </div>
 </template>
 

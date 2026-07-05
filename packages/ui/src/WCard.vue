@@ -15,7 +15,7 @@ interface Props {
   glow?: boolean;
   scaleOnHover?: boolean;
 
-  // Интенсивность и физика ховера
+  // Интенсивность и физика ховера (GSAP)
   hoverScale?: number;
   hoverDuration?: number;
   hoverEase?: string;
@@ -24,8 +24,11 @@ interface Props {
   shadow?: boolean | string;
   hoverShadow?: string;
 
-  // Тип курсора (pointer, grab, default и т.д.)
+  // Тип курсора
   cursor?: string;
+
+  // Настройка CSS переходов (border, background, box-shadow)
+  transition?: string;
 
   // Токены Weegoos Framework
   borderRadius?: string;
@@ -54,8 +57,10 @@ const props = withDefaults(defineProps<Props>(), {
   shadow: true,
   hoverShadow: undefined,
 
-  // Курсор по умолчанию
   cursor: 'default',
+
+  // Дефолтный премиальный транзишн фреймворка Weegoos
+  transition: 'border-color 0.4s ease, background-color 0.4s ease, box-shadow 0.4s ease',
   
   borderRadius: '12px',
   background: '#13141c',
@@ -108,9 +113,10 @@ const cardStyles = computed(() => ({
   '--w-card-padding': props.padding,
   '--w-card-shadow': computedShadow.value,
   '--w-card-shadow-hover': computedHoverShadow.value,
-  
-  // Передаем динамический курсор
   '--w-card-cursor': props.cursor,
+  
+  // Прокидываем значение транзишна в CSS-переменную
+  '--w-card-transition': props.transition,
 }));
 </script>
 
@@ -171,15 +177,14 @@ const cardStyles = computed(() => ({
   border-radius: var(--w-card-radius);
   padding: var(--w-card-padding);
   box-shadow: var(--w-card-shadow);
-  
-  /* Применяем кастомный курсор */
   cursor: var(--w-card-cursor);
-  
   box-sizing: border-box;
   overflow: hidden;
   transform-style: preserve-3d;
   will-change: transform, box-shadow;
-  transition: border-color 0.4s ease, background-color 0.4s ease, box-shadow 0.4s ease;
+  
+  /* Используем динамический transition */
+  transition: var(--w-card-transition);
 }
 
 .w-card:hover {
