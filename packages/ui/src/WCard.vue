@@ -8,10 +8,18 @@ import {
   COLOR_MAP,
 } from './tokens/card.tokens';
 
+type CardPreset =
+  | 'default'
+  | 'glass'
+  | 'solid'
+  | 'elevated'
+  | 'minimal'
+  | 'neon';
+
 type CardColor = keyof typeof COLOR_MAP;
 interface Props {
   // --- 1. Дизайн-токены (System Defaults) ---
-  variant?: 'default' | 'glass' | 'solid';
+   preset?: CardPreset;
   size?: 'sm' | 'md' | 'lg';
   radius?: 'sm' | 'md' | 'lg' | 'xl';
   color?: CardColor;
@@ -58,23 +66,21 @@ interface Props {
 
 const props = withDefaults(defineProps<Props>(), {
   // ===== Дизайн-токены =====
-  variant: 'default',
   size: 'md',
   radius: 'md',
   color: 'neutral',
   elevation: 'md',
+  preset: 'default',
 
   // ===== Анимации =====
   maxTilt: 12,
   perspective: 1000,
 
-  glowColor: 'rgba(0, 220, 130, 0.12)',
   glowSize: 400,
   glowOpacity: 1,
   glowBlur: '0px',
 
   tilt: true,
-  glow: true,
   scaleOnHover: true,
   disabled: false,
   tiltOnTouch: false,
@@ -160,6 +166,178 @@ const onTouchEnd = (e: TouchEvent) => {
 const formatSize = (value: string | number) => {
   return typeof value === 'number' ? `${value}px` : value;
 };
+const PRESET_MAP = {
+  default: {
+    background: '#13141c',
+
+    border: 'rgba(255,255,255,.05)',
+    hoverBorder: 'rgba(255,255,255,.12)',
+
+    shadow: ELEVATION_MAP.md,
+    hoverShadow: ELEVATION_MAP.lg,
+
+    glow: false,
+    glowColor: undefined,
+    glowOpacity: 0,
+    glowSize: 350,
+    glowBlur: '0px',
+
+    overlay: 'rgba(255,255,255,.01)',
+
+    scale: 1.015,
+
+    backdropFilter: 'none',
+
+    textColor: 'inherit',
+  },
+
+  glass: {
+    background: 'rgba(255,255,255,.05)',
+
+    border: 'rgba(255,255,255,.12)',
+    hoverBorder: 'rgba(255,255,255,.20)',
+
+    shadow: ELEVATION_MAP.sm,
+    hoverShadow: ELEVATION_MAP.md,
+
+    glow: false,
+    glowColor: undefined,
+    glowOpacity: 0,
+    glowSize: 350,
+    glowBlur: '20px',
+
+    overlay: 'rgba(255,255,255,.02)',
+
+    scale: 1.02,
+
+    backdropFilter: 'blur(20px)',
+
+    textColor: 'inherit',
+  },
+
+  solid: {
+    background: undefined,
+
+    border: 'transparent',
+    hoverBorder: 'transparent',
+
+    shadow: ELEVATION_MAP.none,
+    hoverShadow: ELEVATION_MAP.sm,
+
+    glow: false,
+    glowColor: undefined,
+    glowOpacity: 0,
+    glowSize: 350,
+    glowBlur: '0px',
+
+    overlay: 'transparent',
+
+    scale: 1.01,
+
+    backdropFilter: 'none',
+
+    textColor: '#fff',
+  },
+
+  elevated: {
+    background: '#181a22',
+
+    border: 'rgba(255,255,255,.04)',
+    hoverBorder: 'rgba(255,255,255,.08)',
+
+    shadow: ELEVATION_MAP.lg,
+    hoverShadow:
+      '0 25px 50px rgba(0,0,0,.35)',
+
+    glow: false,
+    glowColor: undefined,
+    glowOpacity: 0,
+    glowSize: 400,
+    glowBlur: '10px',
+
+    overlay: 'rgba(255,255,255,.015)',
+
+    scale: 1.02,
+
+    backdropFilter: 'none',
+
+    textColor: 'inherit',
+  },
+
+  minimal: {
+    background: 'transparent',
+
+    border: 'transparent',
+    hoverBorder: 'transparent',
+
+    shadow: 'none',
+    hoverShadow: 'none',
+
+    glow: false,
+    glowColor: undefined,
+    glowOpacity: 0,
+    glowSize: 0,
+    glowBlur: '0px',
+
+    overlay: 'transparent',
+
+    scale: 1,
+
+    backdropFilter: 'none',
+
+    textColor: 'inherit',
+  },
+
+neon: {
+  background: '#0e1017',
+
+  border: undefined,
+  hoverBorder: undefined,
+
+  shadow: undefined,
+  hoverShadow: undefined,
+
+  glow: true,
+  glowColor: undefined,
+  glowOpacity: .45,
+  glowSize: 520,
+  glowBlur: '28px',
+
+  overlay: 'rgba(255,255,255,.03)',
+
+  scale: 1.025,
+
+  backdropFilter: 'none',
+
+  textColor: '#fff',
+},
+} as const;
+const accentColor = computed(() => COLOR_MAP[props.color]);
+const preset = computed(() => PRESET_MAP[props.preset]);
+const isGlowEnabled = computed(() => {
+  return props.glow ?? preset.value.glow;
+});
+
+const glowSize = computed(() =>
+  props.glowSize ??
+  preset.value.glowSize
+);
+
+const glowBlur = computed(() =>
+  props.glowBlur ??
+  preset.value.glowBlur
+);
+
+const glowColor = computed(() => {
+
+  if (props.glowColor)
+    return props.glowColor;
+
+  if (preset.value.glowColor)
+    return preset.value.glowColor;
+
+  return COLOR_MAP[props.color];
+});
 
 const cardStyles = computed(() => ({
   width: formatSize(props.width),
@@ -170,42 +348,42 @@ const cardStyles = computed(() => ({
     RADIUS_MAP[props.radius],
 
 '--w-card-bg':
-  props.background ??
-  (
-    props.variant === 'glass'
-      ? 'rgba(255,255,255,0.05)'
-      : props.variant === 'solid'
-        ? COLOR_MAP[props.color]
-        : '#13141c'
-  ),
+props.background ??
+(
+    preset.value.background ??
+    COLOR_MAP[props.color]
+),
   '--w-card-border-width':
     formatSize(props.borderWidth ?? '1px'),
 
-  '--w-card-border':
-    props.borderColor ??
-    (props.variant === 'glass'
-      ? 'rgba(255,255,255,0.1)'
-      : 'rgba(255,255,255,0.05)'),
+'--w-card-border':
+  props.borderColor ??
+  (
+    props.preset === 'neon'
+      ? accentColor.value
+      : preset.value.border
+  ),
 
-  '--w-card-border-hover':
-    props.disabled
-      ? (props.borderColor ??
-          (props.variant === 'glass'
-            ? 'rgba(255,255,255,0.1)'
-            : 'rgba(255,255,255,0.05)'))
-      : (props.hoverBorderColor ??
-          'rgba(255,255,255,0.15)'),
+'--w-card-border-hover':
+  props.hoverBorderColor ??
+  (
+    props.preset === 'neon'
+      ? accentColor.value
+      : preset.value.hoverBorder
+  ),
 
   '--w-card-padding':
     props.padding ??
     SIZE_MAP[props.size],
 
-  '--w-card-shadow':
-    props.shadow === false
-      ? 'none'
-      : props.shadow === true
-        ? ELEVATION_MAP[props.elevation]
-        : props.shadow,
+'--w-card-shadow':
+  props.shadow === false
+    ? 'none'
+    : props.shadow === true
+      ? props.preset === 'neon'
+  ? `0 0 30px ${accentColor.value}55`
+  : preset.value.shadow
+      : props.shadow,
 
   '--w-card-cursor':
     props.disabled ? 'default' : props.cursor,
@@ -216,16 +394,27 @@ const cardStyles = computed(() => ({
   '--w-card-transition':
     props.transition,
 
-  '--w-card-glow-opacity':
-    String(props.glowOpacity),
+'--w-card-glow-opacity':
+String(
+  props.glowOpacity ??
+  preset.value.glowOpacity
+),
   
 '--w-card-shadow-hover':
   props.hoverShadow ??
-  (props.shadow === false
-    ? 'none'
-    : props.shadow === true
-      ? ELEVATION_MAP[props.elevation]
-      : props.shadow),
+  (
+    props.shadow === false
+      ? 'none'
+      : props.shadow === true
+        ? preset.value.hoverShadow
+        : props.shadow
+  ),
+
+  '--w-card-backdrop-filter':
+preset.value.backdropFilter,
+
+'--w-card-text':
+preset.value.textColor,
 }));
 </script>
 
@@ -246,7 +435,7 @@ const cardStyles = computed(() => ({
       @touchstart="onTouchStart"
       @touchend="onTouchEnd"
     >
-      <div v-if="glow && !disabled" class="w-card-glow-container">
+      <div v-if="isGlowEnabled && !disabled" class="w-card-glow-container">
         <slot 
           v-if="$slots.glow" 
           name="glow" 
@@ -260,8 +449,8 @@ const cardStyles = computed(() => ({
           class="w-card-glow-default"
           :style="{
             opacity: isHovered ? 'var(--w-card-glow-opacity)' : 0,
-            filter: `blur(${formatSize(props.glowBlur)})`,
-            background: `radial-gradient(${glowSize}px circle at ${glowX}px ${glowY}px, ${glowColor}, transparent)`,
+           filter: `blur(${formatSize(glowBlur)})`,
+          background: `radial-gradient(${glowSize.value}px circle at ${glowX}px ${glowY}px, ${glowColor}, transparent)`,
           }"
         ></div>
       </div>
@@ -313,7 +502,13 @@ const cardStyles = computed(() => ({
   isolation: isolate;
   transform-style: preserve-3d;
   will-change: transform, box-shadow;
+   backdrop-filter: var(--w-card-backdrop-filter);
+  -webkit-backdrop-filter: var(--w-card-backdrop-filter);
+
+  color: var(--w-card-text);
+
   transition: var(--w-card-transition);
+  
 }
 
 /* На мобильных предотвращаем нежелательные зависания скролла, если тач выключен */

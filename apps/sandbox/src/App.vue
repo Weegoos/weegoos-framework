@@ -284,12 +284,58 @@
       <p>Здесь мы перекрыли background, border и радиус своими значениями.</p>
     </WCard>
 
-    <!-- 4. Карточка с ошибкой (color="danger") -->
-    <WCard color="danger" elevation="sm" variant="solid" width="300px" height="150px" :glow="false">
-      <h3>Ошибка системы</h3>
-      <p>Использует токен цветовой схемы danger.</p>
-    </WCard>
+<WCard preset="default">
+  Default Card
+</WCard>
 
+<!-- Glassmorphism -->
+<WCard preset="glass">
+  Glass Card
+</WCard>
+
+<!-- Цветная карточка -->
+<WCard preset="solid" color="primary">
+  Primary
+</WCard>
+
+<WCard preset="solid" color="success">
+  Success
+</WCard>
+
+<WCard preset="solid" color="danger">
+  Danger
+</WCard>
+
+<WCard preset="solid" color="warning">
+  Warning
+</WCard>
+
+<WCard preset="solid" color="info">
+  Info
+</WCard>
+
+<!-- Поднятая карточка -->
+<WCard preset="elevated">
+  Elevated
+</WCard>
+
+<!-- Минималистичная -->
+<WCard preset="minimal">
+  Minimal
+</WCard>
+
+<!-- Неоновая -->
+<WCard preset="neon" color="primary">
+  Neon Primary
+</WCard>
+
+<WCard preset="neon" color="danger">
+  Neon Danger
+</WCard>
+
+<WCard preset="neon" color="success">
+  Neon Success
+</WCard>
   </div>
   </div>
 </template>

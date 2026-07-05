@@ -31,3 +31,4 @@ export const COLOR_MAP = {
 
   neutral: 'rgba(156,163,175,.12)',
 };
+
