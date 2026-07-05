@@ -1,7 +1,6 @@
 <template>
   <div class="sandbox-root">
     
-    <!-- 1. Полный фарш (Все эффекты по умолчанию) -->
     <WCard 
       width="400px" 
       height="250px"
@@ -18,7 +17,6 @@
       </div>
     </WCard>
 
-    <!-- 2. Только свечение, без 3D-наклона (Стиль Stripe/Linear) -->
     <WCard 
       width="400px" 
       height="250px"
@@ -34,7 +32,6 @@
       </div>
     </WCard>
 
-    <!-- 3. Только 3D-наклон, без неонового свечения -->
     <WCard 
       width="400px" 
       height="250px"
@@ -49,7 +46,6 @@
       </div>
     </WCard>
 
-    <!-- 4. Строгая статика (Все эффекты отключены) -->
     <WCard 
       width="400px" 
       height="250px"
@@ -66,7 +62,42 @@
       </div>
     </WCard>
 
-    <!-- 5. Дефолтный стиль Weegoos -->
+    <WCard 
+      width="400px" 
+      height="250px"
+      :hover-scale="1.03"
+      :hover-duration="0.8"
+      hover-ease="power4.out"
+      background="#141414"
+      glowColor="rgba(239, 68, 68, 0.15)"
+      hoverBorderColor="#ef4444"
+    >
+      <div style="display: flex; flex-direction: column; gap: 8px;">
+        <h3 style="color: #ef4444; font-family: sans-serif; margin: 0;">Heavy Inertia</h3>
+        <p style="color: #aaa; font-family: sans-serif; font-size: 14px; margin: 0;">
+          Длительность 0.8с и кривая power4.out создают кинематографичный эффект тяжелого монолита, который плавно реагирует на курсор.
+        </p>
+      </div>
+    </WCard>
+
+    <WCard 
+      width="400px" 
+      height="250px"
+      :hover-scale="1.05"
+      :hover-duration="0.2"
+      hover-ease="elastic.out(1, 0.75)"
+      background="#091e1b"
+      glowColor="rgba(56, 189, 248, 0.25)"
+      hoverBorderColor="#38bdf8"
+    >
+      <div style="display: flex; flex-direction: column; gap: 8px;">
+        <h3 style="color: #38bdf8; font-family: sans-serif; margin: 0;">Snappy Elastic</h3>
+        <p style="color: #aaa; font-family: sans-serif; font-size: 14px; margin: 0;">
+          Масштаб 1.05, длительность 0.2с и встроенный эластик GSAP создают резкий, пружинистый игровой клик-эффект при наведении.
+        </p>
+      </div>
+    </WCard>
+
     <WCard width="400px" height="250px">
       <span style="color: white; font-family: sans-serif;">Default Weegoos Style</span>
     </WCard>
