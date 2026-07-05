@@ -127,53 +127,24 @@
   shadow="0 4px 24px rgba(0, 0, 0, 0.6), 0 1px 2px rgba(139, 92, 246, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.03)"
   hoverShadow="0 40px 80px -16px rgba(0, 0, 0, 0.8), 0 0 50px -10px rgba(139, 92, 246, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.07)"
 >
-  <div style="
-    display: flex; 
-    flex-direction: column; 
-    justify-content: space-between; 
-    height: 100%;
-    font-family: Inter, SF Pro Display, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  ">
-    <!-- Верхняя часть: Теги и Заголовок -->
-    <div style="display: flex; flex-direction: column; gap: 8px;">
-      <div style="
-        font-size: 11px; 
-        font-weight: 600; 
-        text-transform: uppercase; 
-        letter-spacing: 0.08em; 
-        color: #a78bfa;
-        opacity: 0.85;
-      ">
-        Premium Feature
-      </div>
-      <h3 style="
-        font-size: 20px; 
-        font-weight: 500; 
-        letter-spacing: -0.02em; 
-        color: #ffffff; 
-        margin: 0;
-      ">
-        Custom Purple Shadows
-      </h3>
-      <p style="
-        font-size: 14px; 
-        line-height: 1.5; 
-        color: #9ca3af; 
-        margin: 8px 0 0 0;
-        font-weight: 400;
-      ">
-        Многослойные тени и внутреннее тиснение `inset` создают иллюзию физического стекла.
-      </p>
+  <template #header>
+    <div style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: #a78bfa; opacity: 0.85;">
+      Premium Feature
     </div>
+    <h3 style="font-size: 20px; font-weight: 500; letter-spacing: -0.02em; color: #ffffff; margin: 0;">
+      Custom Purple Shadows
+    </h3>
+  </template>
 
-    <!-- Нижняя часть: Интерактивный элемент -->
-    <div style="display: flex; align-items: center; justify-content: space-between;">
-      <span style="font-size: 13px; color: #6b7280; font-weight: 400;">Weegoos Engine v1.0</span>
-      <WButton magnetic radius="60" style="--w-btn-bg: #8b5cf6;">Explore</WButton>
-    </div>
-  </div>
+  <!-- Описание автоматически падает в центральную зону -->
+  <p style="font-size: 14px; line-height: 1.5; color: #9ca3af; margin: 8px 0 0 0; font-weight: 400;">
+    Многослойные тени и внутреннее тиснение `inset` создают иллюзию физического стекла.
+  </p>
+
+  <template #footer>
+    <span style="font-size: 13px; color: #6b7280; font-weight: 400;">Weegoos Engine v1.0</span>
+    <WButton magnetic radius="60" style="--w-btn-bg: #8b5cf6;">Explore</WButton>
+  </template>
 </WCard>
 
   </div>

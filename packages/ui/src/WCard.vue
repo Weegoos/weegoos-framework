@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, useSlots } from 'vue';
 import { useCardAnimation } from './composables/useCardAnimation';
 
 interface Props {
@@ -20,7 +20,7 @@ interface Props {
   hoverDuration?: number;
   hoverEase?: string;
   
-  // Управление тенями (может быть boolean для пресета или строкой для кастомной тени)
+  // Управление тенями
   shadow?: boolean | string;
   hoverShadow?: string;
 
@@ -48,7 +48,6 @@ const props = withDefaults(defineProps<Props>(), {
   hoverDuration: 0.4,
   hoverEase: 'power2.out',
   
-  // По умолчанию тень включена (пресет Weegoos)
   shadow: true,
   hoverShadow: undefined,
   
@@ -60,6 +59,10 @@ const props = withDefaults(defineProps<Props>(), {
 });
 
 const cardRef = ref<HTMLElement | null>(null);
+const slots = useSlots();
+
+// Проверяем, использует ли разработчик слоты структуры, чтобы включить автоматический layout
+const hasStructuredLayout = computed(() => !!(slots.header || slots.footer));
 
 const {
   glowX,
@@ -74,22 +77,19 @@ const formatSize = (value: string | number) => {
   return typeof value === 'number' ? `${value}px` : value;
 };
 
-// Встроенные премиальные пресеты теней Weegoos
 const DEFAULT_SHADOW = '0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -2px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.4)';
 const DEFAULT_HOVER_SHADOW = '0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(0, 0, 0, 0.3)';
 
-// Вычисляем значение тени на основе переданного типа (boolean или string)
 const computedShadow = computed(() => {
   if (props.shadow === false) return 'none';
   if (props.shadow === true) return DEFAULT_SHADOW;
-  return props.shadow; // если передана строка
+  return props.shadow;
 });
 
 const computedHoverShadow = computed(() => {
   if (props.shadow === false) return 'none';
   if (props.hoverShadow) return props.hoverShadow;
   if (props.shadow === true) return DEFAULT_HOVER_SHADOW;
-  // Если shadow — кастомная строка, а hoverShadow не передан, плавно увеличиваем переданную тень
   return props.shadow; 
 });
 
@@ -101,8 +101,6 @@ const cardStyles = computed(() => ({
   '--w-card-border': props.borderColor,
   '--w-card-border-hover': props.hoverBorderColor,
   '--w-card-padding': props.padding,
-  
-  // Инжектим тени в CSS переменные
   '--w-card-shadow': computedShadow.value,
   '--w-card-shadow-hover': computedHoverShadow.value,
 }));
@@ -129,11 +127,23 @@ const cardStyles = computed(() => ({
         }"
       ></div>
 
+      <!-- Контентная зона с авто-лейаутом -->
       <div 
         class="w-card-content"
+        :class="{ 'w-card-layout-structured': hasStructuredLayout }"
         :style="{ transform: tilt ? 'translateZ(20px)' : 'none' }"
       >
-        <slot />
+        <div v-if="$slots.header" class="w-card-header">
+          <slot name="header" />
+        </div>
+        
+        <div class="w-card-body">
+          <slot />
+        </div>
+
+        <div v-if="$slots.footer" class="w-card-footer">
+          <slot name="footer" />
+        </div>
       </div>
     </div>
   </div>
@@ -153,15 +163,11 @@ const cardStyles = computed(() => ({
   border: 1px solid var(--w-card-border);
   border-radius: var(--w-card-radius);
   padding: var(--w-card-padding);
-  
-  /* Применяем реактивную тень */
   box-shadow: var(--w-card-shadow);
-  
   box-sizing: border-box;
   overflow: hidden;
   transform-style: preserve-3d;
   will-change: transform, box-shadow;
-  /* Добавляем box-shadow в transition, чтобы смена теней при ховере была мягкой */
   transition: border-color 0.4s ease, background-color 0.4s ease, box-shadow 0.4s ease;
 }
 
@@ -184,5 +190,32 @@ const cardStyles = computed(() => ({
   position: relative;
   z-index: 2;
   height: 100%;
+  font-family: Inter, SF Pro Display, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Автоматическая премиальная раскладка */
+.w-card-layout-structured {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.w-card-header {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.w-card-body {
+  flex-grow: 1;
+}
+
+.w-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 16px;
 }
 </style>
