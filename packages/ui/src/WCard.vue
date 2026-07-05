@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
-import { useCardAnimation } from './composables/useCardAnimation'; // Проверь путь к хуку
+import { useCardAnimation } from './composables/useCardAnimation';
 
 interface Props {
   width?: string | number;
@@ -20,6 +20,10 @@ interface Props {
   hoverDuration?: number;
   hoverEase?: string;
   
+  // Управление тенями (может быть boolean для пресета или строкой для кастомной тени)
+  shadow?: boolean | string;
+  hoverShadow?: string;
+
   // Токены Weegoos Framework
   borderRadius?: string;
   background?: string;
@@ -44,6 +48,10 @@ const props = withDefaults(defineProps<Props>(), {
   hoverDuration: 0.4,
   hoverEase: 'power2.out',
   
+  // По умолчанию тень включена (пресет Weegoos)
+  shadow: true,
+  hoverShadow: undefined,
+  
   borderRadius: '12px',
   background: '#13141c',
   borderColor: 'rgba(255, 255, 255, 0.05)',
@@ -53,7 +61,6 @@ const props = withDefaults(defineProps<Props>(), {
 
 const cardRef = ref<HTMLElement | null>(null);
 
-// Передаем пропсы в хук. Используем реактивную обертку-геттер, чтобы хук подхватывал динамические изменения параметров
 const {
   glowX,
   glowY,
@@ -67,6 +74,25 @@ const formatSize = (value: string | number) => {
   return typeof value === 'number' ? `${value}px` : value;
 };
 
+// Встроенные премиальные пресеты теней Weegoos
+const DEFAULT_SHADOW = '0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -2px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.4)';
+const DEFAULT_HOVER_SHADOW = '0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(0, 0, 0, 0.3)';
+
+// Вычисляем значение тени на основе переданного типа (boolean или string)
+const computedShadow = computed(() => {
+  if (props.shadow === false) return 'none';
+  if (props.shadow === true) return DEFAULT_SHADOW;
+  return props.shadow; // если передана строка
+});
+
+const computedHoverShadow = computed(() => {
+  if (props.shadow === false) return 'none';
+  if (props.hoverShadow) return props.hoverShadow;
+  if (props.shadow === true) return DEFAULT_HOVER_SHADOW;
+  // Если shadow — кастомная строка, а hoverShadow не передан, плавно увеличиваем переданную тень
+  return props.shadow; 
+});
+
 const cardStyles = computed(() => ({
   width: formatSize(props.width),
   height: formatSize(props.height),
@@ -75,6 +101,10 @@ const cardStyles = computed(() => ({
   '--w-card-border': props.borderColor,
   '--w-card-border-hover': props.hoverBorderColor,
   '--w-card-padding': props.padding,
+  
+  // Инжектим тени в CSS переменные
+  '--w-card-shadow': computedShadow.value,
+  '--w-card-shadow-hover': computedHoverShadow.value,
 }));
 </script>
 
@@ -123,16 +153,22 @@ const cardStyles = computed(() => ({
   border: 1px solid var(--w-card-border);
   border-radius: var(--w-card-radius);
   padding: var(--w-card-padding);
+  
+  /* Применяем реактивную тень */
+  box-shadow: var(--w-card-shadow);
+  
   box-sizing: border-box;
   overflow: hidden;
   transform-style: preserve-3d;
-  will-change: transform;
-  transition: border-color 0.4s ease, background-color 0.4s ease;
+  will-change: transform, box-shadow;
+  /* Добавляем box-shadow в transition, чтобы смена теней при ховере была мягкой */
+  transition: border-color 0.4s ease, background-color 0.4s ease, box-shadow 0.4s ease;
 }
 
 .w-card:hover {
   border-color: var(--w-card-border-hover);
   background: linear-gradient(0deg, rgba(255, 255, 255, 0.01), rgba(255, 255, 255, 0.01)), var(--w-card-bg);
+  box-shadow: var(--w-card-shadow-hover);
 }
 
 .w-card-glow {
