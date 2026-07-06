@@ -1,31 +1,45 @@
 <template>
   <div class="w-datepicker-wrapper" ref="wrapperRef">
-    <WInput :modelValue="displayValue" placeholder="ДД.ММ.ГГГГ" readonly @click="togglePicker" />
+    <WInput 
+      :modelValue="displayValue" 
+      placeholder="ДД.ММ.ГГГГ" 
+      readonly 
+      @click="togglePicker"
+    />
 
     <Teleport to="body">
       <div v-if="isOpen" class="w-calendar-premium" :style="popoverStyle" ref="calRef">
+        <!-- Header с индикацией шага -->
         <div class="w-calendar-header">
-          <div class="year-label">{{ format(currentMonth, 'yyyy') }}</div>
-          <div class="date-label">{{ format(currentMonth, 'EEE, d MMM', { locale: ru }) }}</div>
-        </div>
-
-        <div class="w-calendar-nav">
-          <button @click="prevMonth" type="button" class="nav-btn">❮</button>
-          <span class="month-label">{{ format(currentMonth, 'MMMM', { locale: ru }) }}</span>
-          <button @click="nextMonth" type="button" class="nav-btn">❯</button>
-        </div>
-
-        <div class="w-calendar-grid">
-          <div class="day-name" v-for="d in ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс']" :key="d">
-            {{ d }}
+          <button class="nav-arrow" @click="prev">❮</button>
+          <div class="nav-info">
+            <span class="nav-clickable" :class="{ 'active': view === 'month' }" @click="view = 'month'">
+              {{ format(currentMonth, 'MMMM', { locale: ru }) }}
+            </span>
+            <span class="nav-clickable" :class="{ 'active': view === 'year' }" @click="view = 'year'">
+              {{ format(currentMonth, 'yyyy') }}
+            </span>
           </div>
-          <div
-            v-for="day in daysInMonth"
-            :key="day.toString()"
-            class="day-cell"
-            @click="selectDate(day)"
-          >
+          <button class="nav-arrow" @click="next">❯</button>
+        </div>
+
+        <!-- Сетка выбора -->
+        <div v-if="view === 'day'" class="w-calendar-grid">
+          <div class="day-name" v-for="d in ['Пн','Вт','Ср','Чт','Пт','Сб','Вс']" :key="d">{{ d }}</div>
+          <div v-for="day in daysInMonth" :key="day.toString()" class="day-cell" @click="selectDate(day)">
             {{ format(day, 'd') }}
+          </div>
+        </div>
+
+        <div v-if="view === 'month'" class="w-calendar-grid-choice">
+          <div v-for="(m, i) in 12" :key="m" class="choice-cell" @click="selectMonth(i)">
+            {{ format(new Date(2024, i, 1), 'MMM', { locale: ru }) }}
+          </div>
+        </div>
+
+        <div v-if="view === 'year'" class="w-calendar-grid-choice">
+          <div v-for="y in yearRange" :key="y" class="choice-cell" @click="selectYear(y)">
+            {{ y }}
           </div>
         </div>
       </div>
@@ -34,150 +48,101 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, computed, nextTick } from 'vue';
-import {
-  format,
-  parseISO,
-  eachDayOfInterval,
-  startOfMonth,
-  endOfMonth,
-  addMonths,
-  subMonths,
-} from 'date-fns';
+import { ref, computed, nextTick, onMounted, onUnmounted } from 'vue';
+import { format, parseISO, eachDayOfInterval, startOfMonth, endOfMonth, setMonth, setYear, getYear, addMonths, subMonths, addYears, subYears } from 'date-fns';
 import { ru } from 'date-fns/locale';
-import { gsap } from 'gsap';
 
 const props = defineProps(['modelValue', 'format']);
 const emit = defineEmits(['update:modelValue']);
 
+type CalendarView = "day" | "month" | "year";
+const view = ref<CalendarView>("day");
 const isOpen = ref(false);
-const calRef = ref(null);
 const currentMonth = ref(new Date());
-
-const daysInMonth = computed(() =>
-  eachDayOfInterval({
-    start: startOfMonth(currentMonth.value),
-    end: endOfMonth(currentMonth.value),
-  })
-);
-
-const displayValue = computed(() =>
-  props.modelValue ? format(parseISO(props.modelValue), props.format || 'dd.MM.yyyy') : ''
-);
-
 const wrapperRef = ref(null);
+const calRef = ref(null);
 const popoverStyle = ref({});
+
+const daysInMonth = computed(() => eachDayOfInterval({
+  start: startOfMonth(currentMonth.value),
+  end: endOfMonth(currentMonth.value)
+}));
+
+const yearRange = computed(() => {
+  const year = getYear(currentMonth.value);
+  return Array.from({ length: 12 }, (_, i) => year - 5 + i);
+});
+
+const displayValue = computed(() => props.modelValue ? format(parseISO(props.modelValue), props.format || 'dd.MM.yyyy') : '');
+
 const togglePicker = async () => {
   isOpen.value = !isOpen.value;
   if (isOpen.value) {
     await nextTick();
     const rect = wrapperRef.value.getBoundingClientRect();
-
-    // Рассчитываем координаты, чтобы календарь был точно под инпутом
     popoverStyle.value = {
       position: 'absolute',
       top: `${rect.bottom + window.scrollY + 5}px`,
       left: `${rect.left + window.scrollX}px`,
-      width: `${rect.width}px`, // Ширина такая же, как у инпута
+      width: '300px'
     };
   }
 };
 
-const prevMonth = () => {
-  gsap.to('.w-calendar-grid', {
-    opacity: 0,
-    x: -20,
-    duration: 0.2,
-    onComplete: () => {
-      currentMonth.value = subMonths(currentMonth.value, 1);
-      gsap.to('.w-calendar-grid', { opacity: 1, x: 0, duration: 0.2 });
-    },
-  });
+const prev = () => {
+  if (view.value === 'day') currentMonth.value = subMonths(currentMonth.value, 1);
+  else if (view.value === 'month') currentMonth.value = subYears(currentMonth.value, 1);
+  else currentMonth.value = subYears(currentMonth.value, 12);
+};
+const next = () => {
+  if (view.value === 'day') currentMonth.value = addMonths(currentMonth.value, 1);
+  else if (view.value === 'month') currentMonth.value = addYears(currentMonth.value, 1);
+  else currentMonth.value = addYears(currentMonth.value, 12);
 };
 
-const nextMonth = () => {
-  gsap.to('.w-calendar-grid', {
-    opacity: 0,
-    x: 20,
-    duration: 0.2,
-    onComplete: async () => {
-      currentMonth.value = addMonths(currentMonth.value, 1);
-      await nextTick(); // Ждем рендеринга обновленных дат
-      gsap.to('.w-calendar-grid', { opacity: 1, x: 0, duration: 0.2 });
-    },
-  });
+const selectYear = (y: number) => { 
+  currentMonth.value = setYear(currentMonth.value, y); 
+  view.value = "month"; // Переход к выбору месяца
 };
 
-const selectDate = (date: Date) => {
-  emit('update:modelValue', format(date, 'yyyy-MM-dd'));
-  isOpen.value = false;
+const selectMonth = (m: number) => { 
+  currentMonth.value = setMonth(currentMonth.value, m); 
+  view.value = "day"; // Переход к выбору дня
 };
 
-watch(isOpen, async (val) => {
-  if (val) {
-    await nextTick(); // Ждем, пока v-if отрисует элемент в DOM
+const selectDate = (date: Date) => { 
+  emit('update:modelValue', format(date, 'yyyy-MM-dd')); 
+  isOpen.value = false; // Закрытие только после полного выбора дня
+};
 
-    if (calRef.value) {
-      gsap.fromTo(
-        calRef.value,
-        { opacity: 0, y: 10, scale: 0.98 },
-        { opacity: 1, y: 0, scale: 1, duration: 0.4, ease: 'power3.out' }
-      );
-    }
+const handleClickOutside = (e: MouseEvent) => {
+  if (isOpen.value && wrapperRef.value && !wrapperRef.value.contains(e.target as Node) && !calRef.value?.contains(e.target as Node)) {
+    isOpen.value = false;
   }
-});
+};
+
+onMounted(() => document.addEventListener('click', handleClickOutside));
+onUnmounted(() => document.removeEventListener('click', handleClickOutside));
 </script>
 
 <style scoped>
 .w-datepicker-wrapper { position: relative; width: 100%; }
-
 .w-calendar-premium {
-  position: absolute;
-  z-index: 9999;
-  width: 320px; /* Фиксируем ширину для удобства */
-  background: rgba(18, 18, 22, 0.85); /* Полупрозрачность */
-  backdrop-filter: blur(12px); /* Эффект стекла */
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 16px;
-  overflow: hidden;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-  padding: 8px;
+  position: absolute; z-index: 9999; background: rgba(18, 18, 22, 0.95);
+  backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px; padding: 12px; box-shadow: 0 20px 50px rgba(0,0,0,0.6);
 }
-
-/* Header убираем или делаем минималистичным */
-.w-calendar-header { 
-  padding: 12px 16px; 
-  color: #fff; 
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+.w-calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.nav-arrow { background: none; border: none; color: #fff; cursor: pointer; padding: 5px; opacity: 0.5; }
+.nav-arrow:hover { opacity: 1; }
+.nav-info { display: flex; gap: 8px; font-weight: 600; color: #fff; }
+.nav-clickable { cursor: pointer; padding: 4px 8px; border-radius: 6px; transition: 0.2s; }
+.nav-clickable:hover, .nav-clickable.active { background: rgba(0, 123, 255, 0.2); color: #007bff; }
+.w-calendar-grid, .w-calendar-grid-choice { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+.w-calendar-grid-choice { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.day-cell, .choice-cell { 
+  padding: 10px 0; text-align: center; cursor: pointer; 
+  border-radius: 8px; color: #fff; transition: 0.2s; 
 }
-.year-label { font-size: 0.7rem; color: #888; text-transform: uppercase; letter-spacing: 0.05em; }
-.date-label { font-size: 1.1rem; font-weight: 500; }
-
-.w-calendar-nav { 
-  display: flex; justify-content: space-between; 
-  padding: 10px; color: #fff; align-items: center; 
-}
-.month-label { font-weight: 600; font-size: 0.9rem; }
-.nav-btn { 
-  background: rgba(255,255,255,0.05); border: none; color: #fff; 
-  cursor: pointer; padding: 6px 10px; border-radius: 8px;
-  transition: all 0.2s;
-}
-.nav-btn:hover { background: rgba(255,255,255,0.1); }
-
-.w-calendar-grid { 
-  display: grid; grid-template-columns: repeat(7, 1fr); 
-  padding: 8px; gap: 2px; color: #fff; text-align: center;
-}
-
-.day-name { font-size: 0.7rem; color: #666; margin-bottom: 8px; }
-.day-cell { 
-  padding: 10px 0; cursor: pointer; border-radius: 8px; 
-  font-size: 0.85rem; font-weight: 400;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-}
-.day-cell:hover { 
-  background: rgba(0, 123, 255, 0.2); 
-  color: #007bff;
-}
+.day-cell:hover, .choice-cell:hover { background: #007bff; }
 </style>
