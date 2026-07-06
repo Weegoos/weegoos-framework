@@ -1,95 +1,39 @@
-# ⚡ Weegoos
+# Weegoos
 
-> **Next-generation UI framework for Vue 3 with hardware-accelerated interactions.**
+Modern UI components for Vue 3.
 
-Weegoos is a modern UI framework for **Vue 3**, inspired by the visual language of **Stripe**, **Linear**, and contemporary design systems.
-
-Instead of providing static components, Weegoos delivers a collection of **interactive UI primitives** powered by physics-based animations, GPU-accelerated rendering, and a flexible design token system.
-
-Every component is built with motion, depth, lighting, and customization in mind—without sacrificing performance or developer experience.
+Weegoos is a component library focused on clean design, smooth interactions, and developer experience. Components are built with Vue 3, TypeScript, and GSAP, providing responsive animations and a consistent API without sacrificing performance.
 
 ---
 
-# ✨ Features
+## Features
 
-### 🎨 Design System
-
-- Built-in design tokens
-- Presets (`default`, `glass`, `solid`, `elevated`, `minimal`, `neon`)
-- Color palette system
-- Radius, spacing and elevation scales
-- Consistent styling across the framework
-
----
-
-### ⚡ Interactive Components
-
-Every component is designed to feel alive.
-
-- Hardware-accelerated 3D tilt
-- Dynamic cursor-based glow
-- Physics-driven interactions
-- Smooth hover transitions
-- GPU-optimized rendering
+* Vue 3 + TypeScript
+* Interactive animations powered by GSAP
+* Consistent design tokens
+* Global component registration
+* Customizable through props
+* Slot-based composition
+* Accessible by default
+* Lightweight and tree-friendly
 
 ---
 
-### 📐 Declarative Customization
+## Installation
 
-Customize components directly through Vue props.
-
-- Layout
-- Colors
-- Shadows
-- Borders
-- Glow
-- Motion
-- Perspective
-- Hover behavior
-
-No custom CSS or JavaScript required for common use cases.
-
----
-
-### 🧩 Flexible Composition
-
-Components support:
-
-- Named slots
-- Global registration
-- Custom HTML elements via `as`
-- Event forwarding
-- Programmatic API with `defineExpose`
-
----
-
-### 🚀 Built for Performance
-
-Powered by **GSAP**.
-
-- Hardware acceleration
-- Smooth animations
-- Optimized transforms
-- Reduced layout thrashing
-- Built-in `prefers-reduced-motion` support
-
----
-
-# 📦 Installation
-
-Install the CLI globally:
+Install the CLI:
 
 ```bash
 npm install -g create-weegoos
 ```
 
-Create a new project:
+Create a project:
 
 ```bash
 create-weegoos
 ```
 
-Start development:
+Install dependencies and start development:
 
 ```bash
 cd weegoos-app
@@ -99,292 +43,97 @@ npm run dev
 
 ---
 
-# 🚀 Components
-
-All Weegoos components are automatically registered globally.
-
-No manual imports are required.
-
----
-
-# WCard
-
-`WCard` is an interactive container component designed for modern interfaces.
-
-It combines a design-token system with hardware-accelerated animations, customizable presets, and declarative interaction controls.
-
----
-
-## Basic Usage
+## Quick Example
 
 ```vue
-<WCard>
-  Beautiful interactive content
-</WCard>
+<template>
+  <WCard>
+    <h2>Welcome</h2>
+
+    <WInput
+      v-model="email"
+      placeholder="Email"
+    />
+
+    <WDatePicker
+      v-model="date"
+    />
+
+    <WButton>
+      Continue
+    </WButton>
+  </WCard>
+</template>
+
+<script setup lang="ts">
+import { ref } from "vue";
+
+const email = ref("");
+const date = ref("");
+</script>
 ```
 
 ---
 
-## Presets
+## Components
 
-Choose from six built-in visual styles.
+| Component       | Description                                                     |
+| --------------- | --------------------------------------------------------------- |
+| **WButton**     | Interactive button with smooth hover effects.                   |
+| **WCard**       | Animated container with configurable appearance and motion.     |
+| **WInput**      | Modern input with glow effects and password visibility support. |
+| **WDatePicker** | Lightweight date picker with day, month, and year navigation.   |
 
-```vue
-<WCard preset="default" />
-<WCard preset="glass" />
-<WCard preset="solid" />
-<WCard preset="elevated" />
-<WCard preset="minimal" />
-<WCard preset="neon" />
-```
+More components are planned as the library evolves.
 
 ---
 
-## Design Tokens
+## Design Principles
 
-Quickly customize the component using framework tokens.
+Weegoos components are built around a small set of consistent principles:
 
-```vue
-<WCard
-    size="lg"
-    radius="xl"
-    color="primary"
-    elevation="lg"
-/>
-```
+* Simple APIs
+* Minimal configuration
+* Smooth interactions
+* Reusable composition
+* Consistent styling
+* Good performance
 
-Supported tokens:
-
-| Prop | Values |
-|------|--------|
-| `preset` | `default` `glass` `solid` `elevated` `minimal` `neon` |
-| `size` | `sm` `md` `lg` |
-| `radius` | `sm` `md` `lg` `xl` |
-| `elevation` | `none` `sm` `md` `lg` |
+Every component follows the same design language and prop conventions to make the library predictable and easy to use.
 
 ---
 
-## Advanced Customization
-
-Every design token can be overridden.
-
-```vue
-<WCard
-    width="420"
-    height="260"
-
-    background="#13141c"
-
-    border-color="#2b2b2b"
-
-    border-width="2"
-
-    padding="32px"
-
-    border-radius="20px"
-/>
-```
-
----
-
-## Motion
-
-Interactive behavior is configurable through props.
-
-```vue
-<WCard
-    :tilt="true"
-    :max-tilt="15"
-    :perspective="1200"
-
-    :scale-on-hover="true"
-    :hover-scale="1.03"
-/>
-```
-
----
-
-## Glow
-
-Enable cursor-reactive glow.
-
-```vue
-<WCard
-    glow
-    glow-color="#00DC82"
-    :glow-size="500"
-    :glow-opacity=".5"
-    glow-blur="24px"
-/>
-```
-
----
-
-## Shadow
-
-```vue
-<WCard
-    shadow
-/>
-
-<WCard
-    shadow="0 20px 80px rgba(0,0,0,.35)"
-/>
-```
-
----
-
-## Layout Slots
-
-Structured layouts are supported out of the box.
-
-```vue
-<WCard>
-
-    <template #header>
-        Header
-    </template>
-
-    Content
-
-    <template #footer>
-        Footer
-    </template>
-
-</WCard>
-```
-
----
-
-## Custom Glow Slot
-
-Replace the built-in glow renderer.
-
-```vue
-<WCard>
-
-    <template #glow="{ x, y, isHovered }">
-
-        <!-- Custom glow implementation -->
-
-    </template>
-
-</WCard>
-```
-
-Slot props:
-
-| Property | Description |
-|----------|-------------|
-| `x` | Cursor X position |
-| `y` | Cursor Y position |
-| `isHovered` | Hover state |
-
----
-
-## Events
-
-```vue
-<WCard
-    @mouseenter="..."
-    @mouseleave="..."
-    @mousemove="..."
-/>
-```
-
----
-
-## Exposed Methods
-
-```ts
-const card = ref()
-
-card.value.reset()
-
-card.value.tiltTo(10, 5)
-
-card.value.focus()
-
-card.value.element
-```
-
-| Method | Description |
-|---------|-------------|
-| `reset()` | Restores the default transform |
-| `tiltTo(x, y)` | Programmatically rotates the card |
-| `focus()` | Focuses the root element |
-| `element` | Returns the underlying DOM element |
-
----
-
-## Accessibility
-
-Weegoos respects the user's system preferences.
-
-- Supports `prefers-reduced-motion`
-- Touch interaction support
-- Optional interaction disabling
-- Custom HTML element rendering via `as`
-
----
-
-# WButton
-
-A premium button component featuring:
-
-- Magnetic cursor attraction
-- Spring-based movement
-- Interactive glow
-- Hardware-accelerated animations
-- Declarative customization
-
-```vue
-<WButton>
-    Get Started
-</WButton>
-```
-
----
-
-# 🏗 Repository Structure
+## Repository Structure
 
 ```text
 weegoos/
 ├── apps/
 │   └── sandbox/
-│
 ├── create-weegoos/
 │   └── template/
-│
 └── packages/
     └── ui/
         ├── components/
         ├── composables/
-        ├── tokens/
-        └── styles/
+        ├── styles/
+        └── tokens/
 ```
 
 ---
 
-# 🎯 Philosophy
+## Roadmap
 
-Weegoos treats UI components as **interactive primitives**, not static elements.
+Current components:
 
-Each component combines:
+* ✅ WButton
+* ✅ WCard
+* ✅ WInput
+* ✅ WDatePicker
 
-- Design tokens
-- Motion
-- Physics
-- Lighting
-- Accessibility
-- Performance
-
-The goal is to provide an expressive developer experience while maintaining production-grade rendering performance.
+Planned additions include more form controls, overlays, navigation components, and layout primitives.
 
 ---
 
-# 📄 License
+## License
 
-Released under the **MIT License**.
-
-You are free to use Weegoos in both personal and commercial projects.
+MIT License.
