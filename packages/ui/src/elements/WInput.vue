@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import { useInputAnimation } from './composables/useCardAnimation';
+import { useInputAnimation } from '../composables/useCardAnimation';
 
 interface Props {
   modelValue?: string | number;

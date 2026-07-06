@@ -1,11 +1,12 @@
 import type { App } from 'vue';
-import WButton from './src/WButton.vue';
-import WCard from './src/WCard.vue';
-import WInput from './src/WInput.vue';
-import WDatePicker from './src/WDatePicker.vue';
+import WButton from '../ui/src/elements/WButton.vue';
+import WCard from '../ui/src/elements/WCard.vue';
+import WInput from '../ui/src/elements/WInput.vue';
+import WDatePicker from '../ui/src/elements/WDatePicker.vue';
+import WCalendar from '../ui/src/elements/WCalendar.vue';
 
 // Экспортируем компоненты по отдельности (для ручного импорта при желании)
-export { WButton, WCard, WInput, WDatePicker };
+export { WButton, WCard, WInput, WDatePicker, WCalendar };
 
 // Экспортируем дефолтный плагин для глобальной регистрации
 export default {
@@ -14,5 +15,6 @@ export default {
     app.component('WCard', WCard);
     app.component('WInput', WInput);
     app.component('WDatePicker', WDatePicker);
+    app.component('WCalendar', WCalendar);
   },
 };

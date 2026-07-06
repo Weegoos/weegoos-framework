@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { ref, computed, useSlots, onMounted } from 'vue';
-import { useCardAnimation } from './composables/useCardAnimation';
+import { useCardAnimation } from '../composables/useCardAnimation';
 import { gsap } from 'gsap';
-import { RADIUS_MAP, SIZE_MAP, ELEVATION_MAP, COLOR_MAP } from './tokens/card.tokens';
+import { RADIUS_MAP, SIZE_MAP, ELEVATION_MAP, COLOR_MAP } from '../tokens/card.tokens';
 
 type CardPreset = 'default' | 'glass' | 'solid' | 'elevated' | 'minimal' | 'neon';
 
