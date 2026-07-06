@@ -1,7 +1,7 @@
 <!-- WDatePicker.vue -->
 <template>
   <div class="w-datepicker-wrapper" ref="wrapperRef">
-    <WInput :modelValue="displayValue" placeholder="ДД.ММ.ГГГГ" readonly @click="togglePicker" />
+    <WInput :modelValue="displayValue" :placeholder="placeholder" readonly @click="togglePicker" />
     <Teleport to="body">
       <div v-if="isOpen" class="w-calendar-premium" :style="popoverStyle" ref="calRef">
         <WCalendar
@@ -25,7 +25,7 @@ import { ref, computed, nextTick, onMounted, onUnmounted } from 'vue';
 import { format, parseISO } from 'date-fns';
 import { useCalendar } from '../composables/useCalendar';
 
-const props = defineProps(['modelValue', 'format']);
+const props = defineProps(['modelValue', 'format', 'placeholder']);
 const emit = defineEmits(['update:modelValue']);
 
 const { currentMonth, view, daysInMonth, yearRange, navigate, selectYear, selectMonth } =

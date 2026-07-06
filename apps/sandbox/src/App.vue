@@ -42,6 +42,10 @@
             placeholder="Date of Birth"
           />
         </div>
+<WBadge>Обычный тег</WBadge>
+    <WBadge variant="success">Активный статус</WBadge>
+    <WBadge variant="danger">Premium функция</WBadge>
+    <WBadge variant="info">Фоновый элемент</WBadge>
       </WCard>
     </form>
   </div>
