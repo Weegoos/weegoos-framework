@@ -428,7 +428,7 @@ const cardStyles = computed(() => ({
           :style="{
             opacity: isHovered ? 'var(--w-card-glow-opacity)' : 0,
             filter: `blur(${formatSize(glowBlur)})`,
-            background: `radial-gradient(${glowSize.value}px circle at ${glowX}px ${glowY}px, ${glowColor}, transparent)`,
+            background: `radial-gradient(${glowSize}px circle at ${glowX}px ${glowY}px, ${glowColor}, transparent)`,
           }"
         ></div>
       </div>

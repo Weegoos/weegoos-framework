@@ -6,6 +6,7 @@
         width="400px" 
         class="login-card"
         :glow="true"
+        
       >
         <template #header>
             <WBadge  variant="success" :interactive="true">Weegoos UI Framework v1.0.0</WBadge>
@@ -20,6 +21,8 @@
             type="email" 
             placeholder="email@example.com" 
           />
+          
+          <WInput placeholder="Batyr"/>
 
           <!-- Пароль -->
           <WInput 
@@ -50,7 +53,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-
+import { WInput, WCard, WBadge, WDatePicker } from '@weegoos/ui';
 const email = ref('');
 const password = ref('');
 const birthDate = ref('');
