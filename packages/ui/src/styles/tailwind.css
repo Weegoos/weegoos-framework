@@ -1,0 +1,4 @@
+@import "tailwindcss" prefix(wg);
+
+@source "../components";
+@source "../**/*.vue";

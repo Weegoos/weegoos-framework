@@ -1,15 +1,16 @@
 import type { App } from 'vue';
-import WButton from '../ui/src/elements/WButton.vue';
-import WCard from '../ui/src/elements/WCard.vue';
-import WInput from '../ui/src/elements/WInput.vue';
-import WDatePicker from '../ui/src/elements/WDatePicker.vue';
-import WCalendar from '../ui/src/elements/WCalendar.vue';
-import WBadge from '../ui/src/elements/WBadge.vue';
 
-// Экспортируем компоненты по отдельности (для ручного импорта при желании)
+import './src/styles/tailwind.css';
+// 2. Компоненты из src/elements/
+import WButton from './src/elements/WButton.vue';
+import WCard from './src/elements/WCard.vue';
+import WInput from './src/elements/WInput.vue';
+import WDatePicker from './src/elements/WDatePicker.vue';
+import WCalendar from './src/elements/WCalendar.vue';
+import WBadge from './src/elements/WBadge.vue';
+
 export { WButton, WCard, WInput, WDatePicker, WCalendar, WBadge };
 
-// Экспортируем дефолтный плагин для глобальной регистрации
 export default {
   install(app: App) {
     app.component('WButton', WButton);

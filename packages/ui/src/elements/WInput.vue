@@ -2,6 +2,10 @@
 import { computed, ref } from 'vue';
 import { useInputAnimation } from '../composables/useCardAnimation';
 
+defineOptions({
+  inheritAttrs: false,
+});
+
 interface Props {
   modelValue?: string | number;
   placeholder?: string;
@@ -13,6 +17,7 @@ interface Props {
   type?: 'text' | 'password' | 'number' | 'email' | 'date' | 'tel';
   autocomplete?: string;
 }
+
 const props = withDefaults(defineProps<Props>(), {
   glowColor: 'rgba(255, 255, 255, 0.3)',
   type: 'text',
@@ -35,7 +40,7 @@ const inputClasses = computed(() => ({
   'w-input--error': props.error,
   'w-input--success': props.success,
   'w-input--disabled': props.disabled,
-  'has-icon': props.type === 'password',
+  'has-toggle': props.type === 'password',
 }));
 </script>
 
@@ -51,7 +56,8 @@ const inputClasses = computed(() => ({
   >
     <input
       class="w-input"
-      :class="{ 'has-toggle': type === 'password' }"
+      :class="inputClasses"
+      v-bind="$attrs"
       :type="currentType"
       :value="modelValue"
       :placeholder="placeholder"
@@ -105,41 +111,9 @@ const inputClasses = computed(() => ({
 </template>
 
 <style scoped>
-.w-input {
-  width: 100%;
-  padding: 12px 16px;
-  background: #0e1017;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
-  color: #fff;
-  box-sizing: border-box;
-  font-size: 1rem;
-}
-
-.has-toggle {
-  padding-right: 45px;
-}
-
-.w-input-toggle {
-  position: absolute;
-  right: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  background: none;
-  border: none;
-  color: #666;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  transition: color 0.2s;
-}
-
-.w-input-toggle:hover {
-  color: #fff;
-}
 .w-input-wrapper {
   position: relative;
-  padding: 1px; /* Толщина светящейся границы */
+  padding: 1px;
   border-radius: 9px;
   background: transparent;
   isolation: isolate;
@@ -187,12 +161,36 @@ const inputClasses = computed(() => ({
   background: #13141c;
 }
 
+.has-toggle {
+  padding-right: 45px;
+}
+
+.w-input-toggle {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: #666;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  transition: color 0.2s;
+}
+
+.w-input-toggle:hover {
+  color: #fff;
+}
+
 .w-input--error {
   border-color: rgba(239, 68, 68, 0.5);
 }
+
 .w-input--success {
   border-color: rgba(34, 197, 94, 0.5);
 }
+
 .w-input--disabled {
   opacity: 0.5;
   cursor: not-allowed;
