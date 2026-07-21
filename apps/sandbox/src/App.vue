@@ -8,7 +8,7 @@
         :glow="true"
       >
         <template #header>
-            <WBadge type="success">Weegoos UI Framework v1.0.0</WBadge>
+            <WBadge  variant="success" :interactive="true">Weegoos UI Framework v1.0.0</WBadge>
           <h2 style="margin: 0; color: #fff;">Welcome Back</h2>
           <p style="color: #888; font-size: 0.9rem;">Sign in to continue to Weegoos</p>
         </template>
@@ -34,7 +34,6 @@
             v-model="age" 
             type="number" 
             placeholder="Your age" 
-            class="wg:bg-red-500"
           />
 
           <!-- ЗАМЕНА: Твой премиальный WDatePicker -->

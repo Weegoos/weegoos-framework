@@ -54,6 +54,7 @@ const inputClasses = computed(() => ({
       width: typeof width === 'number' ? `${width}px` : width,
     }"
   >
+    <!-- Добавили v-bind="$attrs", чтобы внешние классы (wg:*) применялись прямо к инпуту -->
     <input
       class="w-input"
       :class="inputClasses"
