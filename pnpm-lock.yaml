@@ -82,6 +82,9 @@ importers:
       '@weegoos/core':
         specifier: workspace:*
         version: link:../core
+      vite:
+        specifier: ^5.0.0
+        version: 5.4.21(lightningcss@1.32.0)
     devDependencies:
       '@tailwindcss/postcss':
         specifier: ^4.3.3
@@ -104,9 +107,6 @@ importers:
       tailwindcss:
         specifier: ^4.3.3
         version: 4.3.3
-      vite:
-        specifier: ^5.0.0
-        version: 5.4.21(lightningcss@1.32.0)
       vite-plugin-dts:
         specifier: ^5.0.3
         version: 5.0.3(@vue/language-core@3.3.7)(esbuild@0.21.5)(rollup@4.62.2)(typescript@5.9.3)(vite@5.4.21(lightningcss@1.32.0))

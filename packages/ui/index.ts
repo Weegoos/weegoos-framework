@@ -1,6 +1,7 @@
 import type { App } from 'vue';
 
 import './src/styles/tailwind.css';
+export { default as weegoosPlugin } from './src/plugins/weegoos-plugin';
 
 import WButton from './src/elements/WButton.vue';
 import WCard from './src/elements/WCard.vue';
