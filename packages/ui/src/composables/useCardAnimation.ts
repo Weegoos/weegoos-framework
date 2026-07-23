@@ -8,7 +8,9 @@ export function useCardAnimation(cardRef: Ref<HTMLElement | null>, props: any) {
 
   // Хелпер для проверки мобильных устройств
   const isTouchDevice = () => {
-    return typeof window !== 'undefined' && ('ontouchstart' in window || navigator.maxTouchPoints > 0);
+    return (
+      typeof window !== 'undefined' && ('ontouchstart' in window || navigator.maxTouchPoints > 0)
+    );
   };
 
   // Проверка системной настройки "Уменьшение движения" (Reduced Motion) ⭐
@@ -29,14 +31,14 @@ export function useCardAnimation(cardRef: Ref<HTMLElement | null>, props: any) {
         scale: props.hoverScale,
         duration: props.hoverDuration,
         ease: props.hoverEase,
-        overwrite: 'auto'
+        overwrite: 'auto',
       });
     }
   };
 
   const handleMouseMove = (e: MouseEvent | TouchEvent) => {
     if (props.disabled || !cardRef.value) return;
-    
+
     const isTouch = 'touches' in e;
     if (isTouch && !props.tiltOnTouch) return;
 
@@ -44,7 +46,7 @@ export function useCardAnimation(cardRef: Ref<HTMLElement | null>, props: any) {
     const clientY = isTouch ? e.touches[0].clientY : (e as MouseEvent).clientY;
 
     const rect = cardRef.value.getBoundingClientRect();
-    
+
     const x = clientX - rect.left;
     const y = clientY - rect.top;
 
@@ -63,7 +65,7 @@ export function useCardAnimation(cardRef: Ref<HTMLElement | null>, props: any) {
         rotateY: rotateY,
         duration: 0.3,
         ease: 'power2.out',
-        overwrite: 'auto'
+        overwrite: 'auto',
       });
     }
   };
@@ -79,7 +81,7 @@ export function useCardAnimation(cardRef: Ref<HTMLElement | null>, props: any) {
       scale: 1,
       duration: isReducedMotion() ? 0 : props.hoverDuration,
       ease: props.hoverEase,
-      overwrite: 'auto'
+      overwrite: 'auto',
     });
   };
 
@@ -89,6 +91,22 @@ export function useCardAnimation(cardRef: Ref<HTMLElement | null>, props: any) {
     isHovered,
     handleMouseMove,
     handleMouseEnter,
-    handleMouseLeave
+    handleMouseLeave,
   };
+}
+
+export function useInputAnimation() {
+  const wrapperRef = ref<HTMLElement | null>(null);
+
+  const handleMouseMove = (e: MouseEvent) => {
+    if (!wrapperRef.value) return;
+    const rect = wrapperRef.value.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    wrapperRef.value.style.setProperty('--mouse-x', `${x}px`);
+    wrapperRef.value.style.setProperty('--mouse-y', `${y}px`);
+  };
+
+  return { wrapperRef, handleMouseMove };
 }

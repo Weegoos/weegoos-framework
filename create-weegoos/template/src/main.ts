@@ -1,6 +1,6 @@
 import { createApp } from 'vue';
 import App from './App.vue';
-
+import './style.css'
 // Стили лежат внутри src/styles/ — тут всё правильно
 import "C:/Users/user/Desktop/weegoos/packages/ui/src/styles/weegoos.css";
 

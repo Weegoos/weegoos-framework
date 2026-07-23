@@ -6,10 +6,13 @@ interface Props {
   variant?: 'primary' | 'secondary' | 'outline' | 'ghost';
   bgColor?: string;
   textColor?: string;
-  magnetic?: boolean;       // Включает магнитный эффект. По умолчанию: false
-  radius?: number;          // Радиус магнитной зоны в px
+  magnetic?: boolean;
+  radius?: number;
   force?: number;
   disabled?: boolean;
+
+  width?: string | number;
+  height?: string | number;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -17,7 +20,31 @@ const props = withDefaults(defineProps<Props>(), {
   magnetic: false,
   radius: 80,
   force: 0.35,
-  disabled: false
+  disabled: false,
+});
+
+const sizeStyle = computed(() => {
+  const width =
+    props.width != null
+      ? typeof props.width === 'number'
+        ? `${props.width}px`
+        : props.width
+      : undefined;
+
+  const height =
+    props.height != null
+      ? typeof props.height === 'number'
+        ? `${props.height}px`
+        : props.height
+      : undefined;
+
+  const isCircle = width && height && width === height;
+
+  return {
+    width,
+    height,
+    borderRadius: isCircle ? '9999px' : undefined,
+  };
 });
 
 const emit = defineEmits<{
@@ -29,7 +56,7 @@ const itemRef = ref<HTMLElement | null>(null);
 const buttonRef = ref<HTMLElement | null>(null);
 
 const magneticRadius = computed(() => Number(props.radius)); // Защита от передачи строки "100"
-const magneticForce = computed(() => Number(props.force));   // Защита от передачи строки "0.4"
+const magneticForce = computed(() => Number(props.force)); // Защита от передачи строки "0.4"
 const interpolationFactor = 0.08;
 
 let targetX = 0;
@@ -63,7 +90,7 @@ const handleMouseMove = (e: MouseEvent) => {
         scale: 1.04,
         boxShadow: `0 10px 30px ${glowColor.value}33`,
         duration: config?.defaultDuration || 0.4,
-        ease: 'power2.out'
+        ease: 'power2.out',
       });
     }
     targetX = distX * magneticForce.value;
@@ -86,7 +113,7 @@ const updateAnimation = () => {
 
 const resetButton = () => {
   if (!props.magnetic) return;
-  
+
   isMagnetic = false;
   targetX = 0;
   targetY = 0;
@@ -105,7 +132,7 @@ const resetButton = () => {
         currentX = gsap.getProperty(buttonRef.value, 'x') as number;
         currentY = gsap.getProperty(buttonRef.value, 'y') as number;
       }
-    }
+    },
   });
 };
 
@@ -127,12 +154,13 @@ onUnmounted(() => {
 
 <template>
   <div ref="itemRef" class="w-magnetic-item">
-    <button 
-      ref="buttonRef" 
+    <button
+      ref="buttonRef"
       :class="['w-button', `w-button--${variant}`, { 'w-button--disabled': disabled }]"
       :style="{
         backgroundColor: bgColor,
-        color: textColor
+        color: textColor,
+        ...sizeStyle,
       }"
       @click="handleClick"
       @mouseleave="resetButton"
@@ -167,25 +195,62 @@ onUnmounted(() => {
   position: relative;
   will-change: transform;
   white-space: nowrap;
-  transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+  box-sizing: border-box;
 }
 
 .w-button:not(.w-button--disabled):hover {
   transform: translateY(-1px);
 }
 
-.w-button--primary { background: #00dc82; color: #000000; }
-.w-button--primary:hover { background: #00c373; }
+.w-button--primary {
+  background: #00dc82;
+  color: #000000;
+}
+.w-button--primary:hover {
+  background: #00c373;
+}
 
-.w-button--secondary { background: #ffffff; color: #000000; border-color: rgba(255, 255, 255, 0.1); }
-.w-button--secondary:hover { background: #f3f4f6; }
+.w-button--secondary {
+  background: #ffffff;
+  color: #000000;
+  border-color: rgba(255, 255, 255, 0.1);
+}
+.w-button--secondary:hover {
+  background: #f3f4f6;
+}
 
-.w-button--outline { background: transparent; color: #ffffff; border-color: rgba(255, 255, 255, 0.15); }
-.w-button--outline:hover { background: rgba(255, 255, 255, 0.05); border-color: rgba(255, 255, 255, 0.3); }
+.w-button--outline {
+  background: transparent;
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.15);
+}
+.w-button--outline:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.3);
+}
 
-.w-button--ghost { background: transparent; color: #ffffff; }
-.w-button--ghost:hover { background: rgba(255, 255, 255, 0.05); }
+.w-button--ghost {
+  background: transparent;
+  color: #ffffff;
+}
+.w-button--ghost:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
 
-.w-button--disabled { opacity: 0.4; cursor: not-allowed; pointer-events: none; }
-.w-button-content { display: inline-flex; align-items: center; gap: 8px; pointer-events: none; }
+.w-button--disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+.w-button-content {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  pointer-events: none;
+}
 </style>

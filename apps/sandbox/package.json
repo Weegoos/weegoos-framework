@@ -6,13 +6,14 @@
     "dev": "vite"
   },
   "dependencies": {
-    "vue": "^3.4.0",
     "@weegoos/core": "workspace:*",
-    "@weegoos/ui": "workspace:*"
+    "@weegoos/ui": "workspace:*",
+    "vue": "^3.4.0"
   },
   "devDependencies": {
+    "@tailwindcss/vite": "^4.3.3",
     "@vitejs/plugin-vue": "^5.0.0",
-    "vite": "^5.0.0",
-    "typescript": "^5.0.0"
+    "typescript": "^5.0.0",
+    "vite": "^5.0.0"
   }
 }

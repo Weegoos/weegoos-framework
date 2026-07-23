@@ -1,8 +1,15 @@
 import { createApp } from 'vue';
 import App from './App.vue';
 import { WeegoosPlugin } from '@weegoos/core';
-import '@weegoos/ui/src/styles/weegoos.css';
+
+// Импортируем компоненты напрямую из исходников UI-пакета
 import WeegoosUI from '../../../packages/ui/index.ts';
+
+// ИЗМЕНЕНИЕ: Импортируем готовый скомпилированный CSS из папки dist
+import '../../../packages/ui/dist/style.css';
+
+import './styles/main.css';
+
 const app = createApp(App);
 
 app.use(WeegoosPlugin, {
@@ -10,5 +17,5 @@ app.use(WeegoosPlugin, {
   debug: true
 });
 
-app.use(WeegoosUI)
+app.use(WeegoosUI);
 app.mount('#app');

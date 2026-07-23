@@ -1,390 +1,185 @@
-# ⚡ Weegoos
+# Weegoos
 
-> **Next-generation UI framework for Vue 3 with hardware-accelerated interactions.**
+Modern, high-performance Vue 3 component library powered by GSAP animations and Tailwind CSS.
 
-Weegoos is a modern UI framework for **Vue 3**, inspired by the visual language of **Stripe**, **Linear**, and contemporary design systems.
-
-Instead of providing static components, Weegoos delivers a collection of **interactive UI primitives** powered by physics-based animations, GPU-accelerated rendering, and a flexible design token system.
-
-Every component is built with motion, depth, lighting, and customization in mind—without sacrificing performance or developer experience.
+Weegoos is designed for building fast, beautiful, and interactive user interfaces. It combines modular UI components with safe SSR-compatible animation helpers and isolated styles.
 
 ---
 
-# ✨ Features
+## Architecture & Packages
 
-### 🎨 Design System
+This repository is managed as a monorepo containing the following packages:
 
-- Built-in design tokens
-- Presets (`default`, `glass`, `solid`, `elevated`, `minimal`, `neon`)
-- Color palette system
-- Radius, spacing and elevation scales
-- Consistent styling across the framework
+- **`@weegoos/ui`** — Vue 3 UI components, design tokens, and isolated Tailwind CSS styles (`wg-` prefix).
+- **`@weegoos/core`** — GSAP animation helpers, timeline managers, and SSR guards for Nuxt/VitePress.
+- **`create-weegoos`** — CLI tool for scaffolding new Weegoos projects.
 
 ---
 
-### ⚡ Interactive Components
+## Features
 
-Every component is designed to feel alive.
-
-- Hardware-accelerated 3D tilt
-- Dynamic cursor-based glow
-- Physics-driven interactions
-- Smooth hover transitions
-- GPU-optimized rendering
-
----
-
-### 📐 Declarative Customization
-
-Customize components directly through Vue props.
-
-- Layout
-- Colors
-- Shadows
-- Borders
-- Glow
-- Motion
-- Perspective
-- Hover behavior
-
-No custom CSS or JavaScript required for common use cases.
+- **Vue 3 + TypeScript** — Fully typed components with auto-generated `.d.ts` declarations.
+- **GSAP Integration** — Built-in animation utilities with automatic memory cleanup via `gsap.context()`.
+- **Isolated Styling** — Zero CSS conflicts thanks to class prefixing (`wg-`) and a custom Tailwind plugin.
+- **SSR Safe** — Ready for Server-Side Rendering (Nuxt 3, VitePress).
+- **Design Tokens** — Configurable themes, colors, spacing, and motion defaults.
+- **Tree-shakeable** — Import only what you use (ESM & UMD builds).
 
 ---
 
-### 🧩 Flexible Composition
+# Quick Start
 
-Components support:
-
-- Named slots
-- Global registration
-- Custom HTML elements via `as`
-- Event forwarding
-- Programmatic API with `defineExpose`
-
----
-
-### 🚀 Built for Performance
-
-Powered by **GSAP**.
-
-- Hardware acceleration
-- Smooth animations
-- Optimized transforms
-- Reduced layout thrashing
-- Built-in `prefers-reduced-motion` support
-
----
-
-# 📦 Installation
-
-Install the CLI globally:
+## 1. Create a New Project
 
 ```bash
-npm install -g create-weegoos
+npx create-weegoos my-app
+
+cd my-app
+
+pnpm install
+
+pnpm dev
 ```
 
-Create a new project:
+## 2. Manual Installation
+
+Install the packages inside an existing Vue 3 project.
 
 ```bash
-create-weegoos
+pnpm add @weegoos/ui @weegoos/core
 ```
 
-Start development:
-
-```bash
-cd weegoos-app
-npm install
-npm run dev
-```
-
----
-
-# 🚀 Components
-
-All Weegoos components are automatically registered globally.
-
-No manual imports are required.
-
----
-
-# WCard
-
-`WCard` is an interactive container component designed for modern interfaces.
-
-It combines a design-token system with hardware-accelerated animations, customizable presets, and declarative interaction controls.
-
----
-
-## Basic Usage
-
-```vue
-<WCard>
-  Beautiful interactive content
-</WCard>
-```
-
----
-
-## Presets
-
-Choose from six built-in visual styles.
-
-```vue
-<WCard preset="default" />
-<WCard preset="glass" />
-<WCard preset="solid" />
-<WCard preset="elevated" />
-<WCard preset="minimal" />
-<WCard preset="neon" />
-```
-
----
-
-## Design Tokens
-
-Quickly customize the component using framework tokens.
-
-```vue
-<WCard
-    size="lg"
-    radius="xl"
-    color="primary"
-    elevation="lg"
-/>
-```
-
-Supported tokens:
-
-| Prop | Values |
-|------|--------|
-| `preset` | `default` `glass` `solid` `elevated` `minimal` `neon` |
-| `size` | `sm` `md` `lg` |
-| `radius` | `sm` `md` `lg` `xl` |
-| `elevation` | `none` `sm` `md` `lg` |
-
----
-
-## Advanced Customization
-
-Every design token can be overridden.
-
-```vue
-<WCard
-    width="420"
-    height="260"
-
-    background="#13141c"
-
-    border-color="#2b2b2b"
-
-    border-width="2"
-
-    padding="32px"
-
-    border-radius="20px"
-/>
-```
-
----
-
-## Motion
-
-Interactive behavior is configurable through props.
-
-```vue
-<WCard
-    :tilt="true"
-    :max-tilt="15"
-    :perspective="1200"
-
-    :scale-on-hover="true"
-    :hover-scale="1.03"
-/>
-```
-
----
-
-## Glow
-
-Enable cursor-reactive glow.
-
-```vue
-<WCard
-    glow
-    glow-color="#00DC82"
-    :glow-size="500"
-    :glow-opacity=".5"
-    glow-blur="24px"
-/>
-```
-
----
-
-## Shadow
-
-```vue
-<WCard
-    shadow
-/>
-
-<WCard
-    shadow="0 20px 80px rgba(0,0,0,.35)"
-/>
-```
-
----
-
-## Layout Slots
-
-Structured layouts are supported out of the box.
-
-```vue
-<WCard>
-
-    <template #header>
-        Header
-    </template>
-
-    Content
-
-    <template #footer>
-        Footer
-    </template>
-
-</WCard>
-```
-
----
-
-## Custom Glow Slot
-
-Replace the built-in glow renderer.
-
-```vue
-<WCard>
-
-    <template #glow="{ x, y, isHovered }">
-
-        <!-- Custom glow implementation -->
-
-    </template>
-
-</WCard>
-```
-
-Slot props:
-
-| Property | Description |
-|----------|-------------|
-| `x` | Cursor X position |
-| `y` | Cursor Y position |
-| `isHovered` | Hover state |
-
----
-
-## Events
-
-```vue
-<WCard
-    @mouseenter="..."
-    @mouseleave="..."
-    @mousemove="..."
-/>
-```
-
----
-
-## Exposed Methods
+Import the global styles:
 
 ```ts
-const card = ref()
-
-card.value.reset()
-
-card.value.tiltTo(10, 5)
-
-card.value.focus()
-
-card.value.element
+import '@weegoos/ui/dist/style.css';
 ```
 
-| Method | Description |
-|---------|-------------|
-| `reset()` | Restores the default transform |
-| `tiltTo(x, y)` | Programmatically rotates the card |
-| `focus()` | Focuses the root element |
-| `element` | Returns the underlying DOM element |
-
 ---
 
-## Accessibility
-
-Weegoos respects the user's system preferences.
-
-- Supports `prefers-reduced-motion`
-- Touch interaction support
-- Optional interaction disabling
-- Custom HTML element rendering via `as`
-
----
-
-# WButton
-
-A premium button component featuring:
-
-- Magnetic cursor attraction
-- Spring-based movement
-- Interactive glow
-- Hardware-accelerated animations
-- Declarative customization
+# Usage
 
 ```vue
-<WButton>
-    Get Started
-</WButton>
+<script setup lang="ts">
+import { ref } from 'vue'
+import {
+  WCard,
+  WButton,
+  WInput,
+  WDatePicker,
+  WBadge
+} from '@weegoos/ui'
+
+const email = ref('')
+const date = ref('')
+</script>
+
+<template>
+  <WCard class="max-w-md mx-auto p-6">
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-xl font-bold">
+        Welcome to Weegoos
+      </h2>
+
+      <WBadge variant="success">
+        Active
+      </WBadge>
+    </div>
+
+    <WInput
+      v-model="email"
+      class="mb-3"
+      placeholder="Enter your email"
+    />
+
+    <WDatePicker
+      v-model="date"
+      class="mb-4"
+    />
+
+    <WButton
+      block
+      variant="primary"
+    >
+      Continue
+    </WButton>
+  </WCard>
+</template>
 ```
 
 ---
 
-# 🏗 Repository Structure
+# Available Components
+
+| Component | Description |
+|------------|-------------|
+| `WButton` | Interactive button with customizable variants and smooth hover effects. |
+| `WCard` | Animated container supporting design tokens and multiple presets. |
+| `WInput` | Modern input component with focus animations and validation support. |
+| `WDatePicker` | Date picker with month/year navigation and customizable formatting. |
+| `WBadge` | Compact status badge for labels, notifications, and counters. |
+| `WCalendar` | Interactive calendar grid for date selection and event management. |
+
+---
+
+# Repository Structure
 
 ```text
 weegoos/
 ├── apps/
-│   └── sandbox/
+│   └── sandbox/          # Local playground & development environment
 │
-├── create-weegoos/
-│   └── template/
+├── create-weegoos/       # CLI starter template
 │
 └── packages/
-    └── ui/
-        ├── components/
-        ├── composables/
-        ├── tokens/
-        └── styles/
+    ├── core/             # GSAP helpers, timelines & SSR guards (@weegoos/core)
+    └── ui/               # UI components, design tokens & styles (@weegoos/ui)
 ```
 
 ---
 
-# 🎯 Philosophy
+# Contributing
 
-Weegoos treats UI components as **interactive primitives**, not static elements.
+Clone the repository:
 
-Each component combines:
+```bash
+git clone https://github.com/weegoos/weegoos-framework.git
 
-- Design tokens
-- Motion
-- Physics
-- Lighting
-- Accessibility
-- Performance
+cd weegoos
+```
 
-The goal is to provide an expressive developer experience while maintaining production-grade rendering performance.
+Install dependencies:
+
+```bash
+pnpm install
+```
+
+Build every package:
+
+```bash
+pnpm --recursive build
+```
+
+Run the development sandbox:
+
+```bash
+pnpm --filter sandbox dev
+```
 
 ---
 
-# 📄 License
+# Versioning
 
-Released under the **MIT License**.
+This project uses **@changesets/cli** for package versioning.
 
-You are free to use Weegoos in both personal and commercial projects.
+Create a new changeset:
+
+```bash
+pnpm changeset
+```
+
+---
+
+# License
+
+MIT
