@@ -8,14 +8,77 @@ import pc from 'picocolors';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-// Стильный ASCII-баннер для Weegoos
-const BANNER = pc.bold(pc.cyan(`
-  __        _____ _____ ____   ___   ___  ____  
-  \\ \\      / / ____| ____/ ___| / _ \\ / _ \\/ ___| 
-   \\ \\ /\\ / /|  _| |  _|| |  _ | | | | | | \\___ \\ 
-    \\ V  V / | |___| |__| |_| || |_| | |_| |___) |
-     \\_/\\_/  |_____|_____\____/ \\___/ \\___/|____/ 
-`));
+// Вспомогательная пауза
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+// Перемещение курсора вверх на N строк для перезаписи кадров
+function clearLines(count) {
+  process.stdout.write(`\x1b[${count}A\x1b[0J`);
+}
+
+// Строки ASCII-баннера Weegoos
+const BANNER_LINES = [
+  '  __        _____ _____ ____   ___   ___  ____  ',
+  '  \\ \\      / / ____| ____/ ___| / _ \\ / _ \\/ ___| ',
+  '   \\ \\ /\\ / /|  _| |  _|| |  _ | | | | | | \\___ \\ ',
+  '    \\ V  V / | |___| |__| |_| || |_| | |_| |___) |',
+  '     \\_/\\_/  |_____|_____\\____/ \\___/ \\___/|____/ '
+];
+
+// Усовершенствованная анимация печати баннера
+async function animateTypingBanner() {
+  const lineCount = BANNER_LINES.length;
+  const maxLength = Math.max(...BANNER_LINES.map((l) => l.length));
+
+  // 1. Поколоночная печать с эффектом подсвеченного переднего края (Glow Edge)
+  for (let col = 1; col <= maxLength; col++) {
+    for (let i = 0; i < lineCount; i++) {
+      const typedPart = BANNER_LINES[i].slice(0, col);
+      const body = typedPart.slice(0, -1);
+      const headChar = typedPart.slice(-1);
+
+      // Тело логотипа в циане, головной символ подсвечен белым, курсор зеленым
+      const cursor = col < maxLength ? pc.bold(pc.green('▌')) : '';
+      const lineOutput = pc.bold(pc.cyan(body)) + pc.bold(pc.white(headChar)) + cursor;
+
+      console.log(lineOutput);
+    }
+
+    await sleep(12); // Оптимальная скорость каретки
+
+    if (col < maxLength) {
+      clearLines(lineCount);
+    }
+  }
+
+  // 2. Эффект неонового пульса (Зеленый -> Белая вспышка -> Итоговый циан)
+  const pulseColors = [pc.green, pc.white, pc.cyan];
+  for (const colorFn of pulseColors) {
+    await sleep(65);
+    clearLines(lineCount);
+    for (const line of BANNER_LINES) {
+      console.log(pc.bold(colorFn(line)));
+    }
+  }
+}
+
+// Анимация посимвольной печати подзаголовка
+async function animateSubtitle(textStr) {
+  const length = textStr.length;
+
+  for (let i = 1; i <= length; i++) {
+    const typed = textStr.slice(0, i);
+    const cursor = i < length ? pc.green('▌') : '';
+    console.log('   ' + pc.dim(typed) + cursor);
+
+    await sleep(14);
+
+    if (i < length) {
+      clearLines(1);
+    }
+  }
+  console.log(''); // Пустая строка перед intro
+}
 
 // Рекурсивное копирование файлов шаблона
 function copyDir(src, dest) {
@@ -34,10 +97,14 @@ function copyDir(src, dest) {
 }
 
 async function main() {
-  // Очищаем консоль и выводим фирменный баннер
   console.clear();
-  console.log(BANNER);
-  console.log(pc.dim('  ⚡ High-performance Vue 3 & GSAP Framework CLI\n'));
+
+  // 1. Анимируем логотип WEEGOOS
+  await animateTypingBanner();
+
+  // 2. Анимируем подзаголовок
+  await sleep(100);
+  await animateSubtitle('⚡ High-performance Vue 3 & GSAP Framework CLI');
 
   intro(pc.bgCyan(pc.black(' create-weegoos ')));
 
@@ -47,7 +114,6 @@ async function main() {
     placeholder: 'weegoos-app',
     defaultValue: 'weegoos-app',
     validate(value) {
-      // Безопасная проверка: обрабатываем случай, когда value ещё undefined или пустая строка
       if (value !== undefined && !value.trim()) {
         return 'Название не может быть пустым';
       }
